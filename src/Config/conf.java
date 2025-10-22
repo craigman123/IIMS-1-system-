@@ -11,9 +11,9 @@ public class conf {
             con = DriverManager.getConnection("jdbc:sqlite:iims.db"); // Establish connection
             
             Statement stmt = con.createStatement();
-            stmt.execute("PRAGMA foreign_keys = ON");
+            stmt.execute("PRAGMA foreign_keys = ON;");
 
-        } catch (Exception e) {
+        } catch (ClassNotFoundException | SQLException e) {
             System.out.println("Connection Failed: " + e);
         }
         return con;
@@ -146,7 +146,7 @@ public int addRecordAndReturnId(String query, Object... params) {
     // UPDATE METHOD
     //-----------------------------------------------
     
-    public void updateRecord(String sql, Object... values) {
+    public int updateRecord(String sql, Object... values) {
         try (Connection conn = this.connectDB(); // Use the connectDB method
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -177,7 +177,9 @@ public int addRecordAndReturnId(String query, Object... params) {
             System.out.println("Record updated successfully!");
         } catch (SQLException e) {
             System.out.println("Error updating record: " + e.getMessage());
+            return 0;
         }
+        return 1;
     }
     
     public java.util.List<java.util.Map<String, Object>> fetchRecords(String sqlQuery, Object... values) {
@@ -208,5 +210,28 @@ public int addRecordAndReturnId(String query, Object... params) {
 
     return records;
 }
+    
+    public String hashPassword(String password) {
+    try {
+        java.security.MessageDigest md = java.security.MessageDigest.getInstance("SHA-256");
+        byte[] hashedBytes = md.digest(password.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        
+        // Convert byte array to hex string
+        StringBuilder hexString = new StringBuilder();
+        for (byte b : hashedBytes) {
+            String hex = Integer.toHexString(0xff & b);
+            if (hex.length() == 1) hexString.append('0');
+            hexString.append(hex);
+        }
+        return hexString.toString();
+    } catch (java.security.NoSuchAlgorithmException e) {
+        System.out.println("Error hashing password: " + e.getMessage());
+        return null;
+    }
+}
+
+    public int Validations() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
 }
