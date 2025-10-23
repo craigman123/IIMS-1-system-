@@ -229,9 +229,28 @@ public int addRecordAndReturnId(String query, Object... params) {
         return null;
     }
 }
+    
+public Object getSingleData(String sql, Object... params) {
+    Object result = null;
 
-    public int Validations() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    try (Connection conn = this.connectDB();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+        for (int i = 0; i < params.length; i++) {
+            pstmt.setObject(i + 1, params[i]);
+        }
+
+        ResultSet rs = pstmt.executeQuery();
+
+        if (rs.next()) {
+            result = rs.getObject(1);
+        }
+
+    } catch (SQLException e) {
+        System.out.println("Error fetching single data: " + e.getMessage());
     }
+
+    return result;
+}
 
 }

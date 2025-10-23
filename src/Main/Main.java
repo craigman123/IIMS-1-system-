@@ -69,6 +69,7 @@ public class Main {
         Scanner sc = new Scanner(System.in);
         conf config = new conf();
         archive_conf archive = new archive_conf();
+        int impri = 0, add = 0;
         
         System.out.print("Enter Inmate Name " + (r + 1) +": ");
         String name = sc.next();
@@ -97,9 +98,6 @@ public class Main {
         
         System.out.print("Enter Inmate Nationality: ");
         String nation = sc.next();
-
-        System.out.print("Enter Imprisonment Years: ");
-        String impri = sc.next();
         
         String stat = InmateStatus();
 
@@ -137,7 +135,7 @@ public class Main {
         
         sql = "INSERT INTO inmate(i_name, i_age, i_gender, i_nationality, i_impri, i_stat, i_record_quan, i_type, i_apprehended,"
                 + " i_date_register) VALUES (?,?,?,?,?,?,?,?,?,?)";
-        int inmate = config.addRecordAndReturnId(sql, name, age, sex, nation, impri, stat, rec_quan, in_type, appre, 
+        int inmate = config.addRecordAndReturnId(sql, name, age, sex, nation, 0, stat, rec_quan, in_type, appre, 
             date);
 
         sql = "INSERT INTO history(h_name, h_date, h_context, i_id) VALUES(?,?,?,?)";
@@ -158,26 +156,28 @@ public class Main {
             String rec_stat = RecordStatus();
             
             System.out.print("Conviction Time: ");
-            String convict = sc.next();
+            int convict = sc.nextInt();
             
-            System.out.print("Total Imprisonment: ");
-            String total_imrpi = sc.next(); 
-            
-            sql = "INSERT INTO record(r_name, r_stat, r_conviction_time, r_total_impri, i_id) VALUES (?,?,?,?,?)";
-            int record = config.addRecordAndReturnId(sql, rec_name, rec_stat, convict, total_imrpi, inmate);
-            
-            sql = "INSERT INTO a_inmate(name, age, gender, nationality, impri, status, record_quan, type, date_apprehended,"
-                    + " date_registered, i_id) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
-            int archive_inmate = archive.addRecordAndReturnId(sql, name, age, sex, nation, impri, stat, rec_quan, 
-                    in_type, appre, date, inmate);
+            sql = "INSERT INTO record(r_name, r_stat, r_conviction_time, i_id) VALUES (?,?,?,?,?)";
+            int record = config.addRecordAndReturnId(sql, rec_name, rec_stat, convict, inmate);
     
             sql = "INSERT INTO a_record(name, status, conviction_time, i_id) VALUES (?,?,?,?)";
             int archive_record = archive.addRecordAndReturnId(sql, rec_name, rec_stat, convict, inmate);
             
                 System.out.println("Appending Record: ");
                 System.out.println("Inmate Recorded Succesfully: ");
+                
+            impri = impri + convict;
 
             }
+            
+            sql = "INSERT INTO a_inmate(name, age, gender, nationality, impri, status, record_quan, type, date_apprehended,"
+                    + " date_registered, i_id) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+            int archive_inmate = archive.addRecordAndReturnId(sql, name, age, sex, nation, impri, stat, rec_quan, 
+                    in_type, appre, date, inmate);
+            
+            sql = "UPDATE inmate SET i_impri = ? WHERE i_id = ?";
+            config.updateRecord(sql, impri, inmate);
         }
     }
     
@@ -269,7 +269,7 @@ public class Main {
             viewInmateInformation();
         }
         
-        System.out.print("Delete Inmate Data: ");
+        System.out.print("Delete Inmate Information: ");
         int iid = sc.nextInt();
         
         String in_name = "";
@@ -310,11 +310,11 @@ public class Main {
     System.out.println("\n--- VIEWING INMATE RECORDS ---");
     conf config = new conf();
     
-    String sqlQuery = "SELECT r.r_id, r.i_id, r.r_name, r.r_stat, r.r_conviction_time, r.r_total_impri " +
+    String sqlQuery = "SELECT r.r_id, r.i_id, r.r_name, r.r_stat, r.r_conviction_time " +
                       "FROM record r WHERE r.i_id = " + id;
     
-    String[] headers = {"Record ID", "Inmate ID", "Record Name", "Record Status", "Time Sentence", "Total Time Sent."};
-    String[] cols = {"r_id", "i_id", "r_name", "r_stat", "r_conviction_time", "r_total_impri"};
+    String[] headers = {"Record ID", "Inmate ID", "Record Name", "Record Status", "Time Sentence"};
+    String[] cols = {"r_id", "i_id", "r_name", "r_stat", "r_conviction_time"};
     
     config.viewRecords(sqlQuery, headers, cols);
     
@@ -519,93 +519,166 @@ public class Main {
             }
             break;
         
-        case 2:  
+        case 2:  //Update Record
+            
+            System.out.println("Options: ");
+            System.out.println("1: Add Record");
+            System.out.println("2: Remove Record");
+            System.out.println("3: Alter Record");
+            System.out.print("Choice: ");
+            int opt = sc.nextInt();
+            
+            switch(opt){
+                case 1: AddRecord(iid); break;
+                case 2: RemoveRecord(iid); break;
+                
+                case 3: 
+                    System.out.print("Enter Inmate Record ID: ");
+                    int rec_id = sc.nextInt();
 
-            System.out.print("Enter Inmate Record ID: ");
-            int rec_id = sc.nextInt();
+                    System.out.println("Alternation Options: ");
+                    System.out.println("1: Record Name");
+                    System.out.println("2: Status");
+                    System.out.println("3: Conviction Time");
+                    System.out.println("4: Total Imprisonment(disabled temporarily)");
 
-            System.out.println("Alternation Options: ");
-            System.out.println("1: Record Name");
-            System.out.println("2: Status");
-            System.out.println("3: Conviction Time");
-            System.out.println("4: Total Imprisonment(disabled temporarily)");
+                    System.out.print("Select attribute to change: ");
+                    alter = sc.nextInt();
 
-            System.out.print("Select attribute to change: ");
-            alter = sc.nextInt();
+                    switch (alter) {
+                        case 1:
+                            System.out.print("Enter new Record Name: ");
+                            name = sc.next();
+                            String sqlUpdateName = "UPDATE record SET r_name = ? WHERE r_id = ?";
+                            flag = config.updateRecord(sqlUpdateName, name, rec_id);
+                            archiveUpdate = "UPDATE a_record SET name = ? WHERE i_id = ?";
+                            archive.updateRecord(archiveUpdate, name, rec_id);
+                            alt_num = 10;
+                            break;
 
-            switch (alter) {
-                case 1:
-                    System.out.print("Enter new Record Name: ");
-                    name = sc.next();
-                    String sqlUpdateName = "UPDATE record SET r_name = ? WHERE r_id = ?";
-                    flag = config.updateRecord(sqlUpdateName, name, rec_id);
-                    archiveUpdate = "UPDATE a_record SET name = ? WHERE i_id = ?";
-                    archive.updateRecord(archiveUpdate, name, rec_id);
-                    alt_num = 10;
+                        case 2:
+                            System.out.print("Enter new Record Status: ");
+                            String stat = RecordStatus();
+                            String sqlUpdateStatus = "UPDATE record SET r_stat = ? WHERE r_id = ?";
+                            flag = config.updateRecord(sqlUpdateStatus, stat, rec_id);
+                            archiveUpdate = "UPDATE a_record SET status = ? WHERE i_id = ?";
+                            archive.updateRecord(archiveUpdate, stat, rec_id);
+                            alt_num = 11;
+                            break;
+
+                        case 3:
+                            System.out.print("Enter new Conviction Time: ");
+                            String conv = sc.next();
+                            String sqlUpdateConviction = "UPDATE record SET r_conviction_time = ? WHERE r_id = ?";
+                            flag = config.updateRecord(sqlUpdateConviction, conv, rec_id);
+                            archiveUpdate = "UPDATE a_record SET conviction_time = ? WHERE i_id = ?";
+                            archive.updateRecord(archiveUpdate, conv, rec_id);
+                            alt_num = 12;
+                            break;
+
+                        case 4:
+                            System.out.print("Enter Total Imprisonment: ");
+                            String impri = sc.next();
+                            String sqlUpdateImprisonment = "UPDATE record SET r_total_impri = ? WHERE r_id = ?";
+                            flag = config.updateRecord(sqlUpdateImprisonment, impri, rec_id);
+                            archiveUpdate = "UPDATE a_record SET i_name = ? WHERE i_id = ?";
+                            archive.updateRecord(archiveUpdate, impri, rec_id);
+                            alt_num = 13;
+                            break;
+
+                        default:
+                            System.out.println("Invalid option selected.");
+                            break;
+                    }
+
+                    if (flag == 1) {
+                        System.out.println("Inmate Record Successfully Updated");
+                    }
+
+                    context = "";
+                    switch (alt_num) {
+                        case 10: context = "Altered Record Name"; break;
+                        case 11: context = "Altered Record Status"; break;
+                        case 12: context = "Altered Conviction Time"; break;
+                        case 13: context = "Altered Total Imprisonment"; break;
+                        default: context = "Invalid option"; break;
+                    }
+
+                    in_name = "";
+                    if (flag == 1) {
+                        String sqlQuery = "SELECT i_name FROM inmate WHERE i_id = ?";
+                        List<Map<String, Object>> result = config.fetchRecords(sqlQuery, iid);
+
+                        if (!result.isEmpty()) {
+                            java.util.Map<String, Object> getname = result.get(0);
+                            in_name = getname.get("i_name").toString();
+                        }
+
+                        sql = "INSERT INTO history(h_name, h_date, h_context, i_id) VALUES(?,?,?,?)";
+                        archive.addRecordAndReturnId(sql, in_name, c_date, context, iid);
+                    }
+                    ; 
                     break;
-
-                case 2:
-                    System.out.print("Enter new Record Status: ");
-                    String stat = RecordStatus();
-                    String sqlUpdateStatus = "UPDATE record SET r_stat = ? WHERE r_id = ?";
-                    flag = config.updateRecord(sqlUpdateStatus, stat, rec_id);
-                    archiveUpdate = "UPDATE a_record SET status = ? WHERE i_id = ?";
-                    archive.updateRecord(archiveUpdate, stat, rec_id);
-                    alt_num = 11;
-                    break;
-
-                case 3:
-                    System.out.print("Enter new Conviction Time: ");
-                    String conv = sc.next();
-                    String sqlUpdateConviction = "UPDATE record SET r_conviction_time = ? WHERE r_id = ?";
-                    flag = config.updateRecord(sqlUpdateConviction, conv, rec_id);
-                    archiveUpdate = "UPDATE a_record SET conviction_time = ? WHERE i_id = ?";
-                    archive.updateRecord(archiveUpdate, conv, rec_id);
-                    alt_num = 12;
-                    break;
-
-                case 4:
-                    System.out.print("Enter Total Imprisonment: ");
-                    String impri = sc.next();
-                    String sqlUpdateImprisonment = "UPDATE record SET r_total_impri = ? WHERE r_id = ?";
-                    flag = config.updateRecord(sqlUpdateImprisonment, impri, rec_id);
-                    archiveUpdate = "UPDATE a_record SET i_name = ? WHERE i_id = ?";
-                    archive.updateRecord(archiveUpdate, impri, rec_id);
-                    alt_num = 13;
-                    break;
-
                 default:
-                    System.out.println("Invalid option selected.");
-                    break;
+                    System.out.println("Invalid Choice: ");
             }
-
-            if (flag == 1) {
-                System.out.println("Inmate Record Successfully Updated");
-            }
-
-            context = "";
-            switch (alt_num) {
-                case 10: context = "Altered Record Name"; break;
-                case 11: context = "Altered Record Status"; break;
-                case 12: context = "Altered Conviction Time"; break;
-                case 13: context = "Altered Total Imprisonment"; break;
-                default: context = "Invalid option"; break;
-            }
-
-            in_name = "";
-            if (flag == 1) {
-                String sqlQuery = "SELECT i_name FROM inmate WHERE i_id = ?";
-                List<Map<String, Object>> result = config.fetchRecords(sqlQuery, iid);
-
-                if (!result.isEmpty()) {
-                    java.util.Map<String, Object> getname = result.get(0);
-                    in_name = getname.get("i_name").toString();
-                }
-
-                sql = "INSERT INTO history(h_name, h_date, h_context, i_id) VALUES(?,?,?,?)";
-                archive.addRecordAndReturnId(sql, in_name, c_date, context, iid);
-            }
+            
+            
             break;
         }
+    }
+    
+    public static void AddRecord(int iid){
+        Scanner sc = new Scanner(System.in);
+        conf config = new conf();
+        int x;
+        String sql;
+        
+        System.out.print("Record Quantity: ");
+        int rec_quan = sc.nextInt();
+        
+        for(x = 0; x < rec_quan; x++){
+            System.out.print("Enter Record Name: ");
+            String name = sc.next();
+            
+            System.out.println("Enter Status: ");
+            String stat = RecordStatus();
+            
+            System.out.print("Conviction Time: ");
+            int convict = sc.nextInt();
+            
+            sql = "INSERT INTO record(r_name, r_stat, r_conviction_time, i_id) VALUES (?,?,?,?)";
+            config.addRecordAndReturnId(sql, name, stat, convict, iid);
+        }
+        
+        sql = "SELECT i_record_quan FROM inmate WHERE i_id = ?";
+        Object singledata = config.getSingleData(sql, iid);
+        
+        int recordQty = ((Number) singledata).intValue();
+        int res = recordQty + rec_quan;
+        
+        sql = "UPDATE inmate SET i_record_quan = ? WHERE i_id = ?";
+        config.updateRecord(sql, res, iid);
+    }
+    
+    public static void RemoveRecord(int iid){
+        Scanner sc = new Scanner(System.in);
+        conf config = new conf();
+        
+        System.out.println("Enter Record ID to delete");
+        int rec_id = sc.nextInt();
+        
+        String deleteInmateInfo;
+        deleteInmateInfo = "DELETE FROM record WHERE r_id = ?";
+        config.deleteRecord(deleteInmateInfo, rec_id);
+        
+        String sql = "SELECT i_record_quan FROM inmate WHERE i_id = ?";
+        Object singledata = config.getSingleData(sql, iid);
+        
+        int recordQty = ((Number) singledata).intValue();
+        int res = recordQty - 1;
+        
+        sql = "UPDATE inmate SET i_record_quan = ? WHERE i_id = ?";
+        config.updateRecord(sql, res, iid);
     }
 }
