@@ -28,11 +28,7 @@ public class Staff {
             }
 
             switch (choice) {
-                case 1:
-                    System.out.print("Inmate Quantity: ");
-                    int count = sc.nextInt();
-                    AddInmate(count);
-                    break;
+                case 1: AddInmate(); break;
                 case 2: UpdateInmate(); break;
                 case 3: 
                     
@@ -59,9 +55,5 @@ public class Staff {
                     System.out.println("Invalid Choice!");
                 }
             }
-    }
-
-    Staff() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

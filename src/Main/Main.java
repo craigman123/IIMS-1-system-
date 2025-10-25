@@ -3,7 +3,6 @@ package Main;
 
 import java.util.*;
 import Config.conf;
-import Config.archive_conf;
 import Config.Validations;
 
 public class Main {
@@ -13,13 +12,14 @@ public class Main {
         Log_Reg lgreg = new Log_Reg();
                 
         while(true){
-        System.out.println("Welcome to the System: ");
+        System.out.println(" ----- Welcome to the System: ----- ");
             int ans;
         do{
-        System.out.println("Enter Choice: ");
+        System.out.println("\n +++ Enter Choice: +++ ");
         System.out.println("1: Register User: ");
         System.out.println("2: Log-In: ");
         System.out.println("3: Exit: ");
+            System.out.println("=====================");
         
         System.out.print("Choice: ");
         int choice = Validations.ChoiceValidation(1,3);
@@ -44,8 +44,9 @@ public class Main {
                 
                 }
         
-                System.out.println("Do you want to continue?");
-                System.out.print("(1 - yes | 2 - no): ");
+                System.out.print("\n ----- Do you want to continue? ----- ");
+                System.out.print("\n ------- (1 - yes || 2 - no): ------- ");
+                System.out.print("\nChoice: ");
                 ans = Validations.ChoiceValidation(1,2);
             }while(ans == 1);
         }
@@ -62,122 +63,145 @@ public class Main {
         
     }
     
-    public static void AddInmate(int count){
+    public static void AddInmate(){
+        
+        Scanner sc = new Scanner(System.in);
+        conf config = new conf();
+        int impri = 0, add = 0;
+        
+        System.out.println("\n ----- Register Inmate -----");
+        
+        System.out.print("Inmate Quantity: ");
+        int count = sc.nextInt();
         
         int r;
         for(r = 0; r < count; r++){
-        Scanner sc = new Scanner(System.in);
-        conf config = new conf();
-        archive_conf archive = new archive_conf();
-        int impri = 0, add = 0;
         
-        System.out.print("Enter Inmate Name " + (r + 1) +": ");
-        String name = sc.next();
+            System.out.print("\nEnter Inmate Name " + (r + 1) +": ");
+            String name = sc.next();
 
-        System.out.print("Enter Inmate Age: ");
-        int age = Validations.AgeValidations(17);
-        
-        System.out.println("Select Gender:");
-        System.out.println("1: Male");
-        System.out.println("2: Female");
-        System.out.println("3: Other");
-        System.out.print("Choice: ");
-        int genderChoice = Validations.ChoiceValidation(1, 3);
+            System.out.print("Enter Inmate Age: ");
+            int age = Validations.AgeValidations(17);
 
-        String sex = "";
+            System.out.println("\n ----- Select Gender: ----- ");
+            System.out.println("1: Male");
+            System.out.println("2: Female");
+            System.out.println("3: Other");
+            System.out.print("Choice: ");
+            int genderChoice = Validations.ChoiceValidation(1, 3);
 
-        switch (genderChoice) {
-            case 1: sex = "Male"; break;
-            case 2: sex = "Female"; break;
-            case 3: sex = "Other"; break;
-            default:
-                sex = "Alien";
-                System.out.println("Invalid choice, defaulting to Alien");
-                break;
-        }
-        
-        System.out.print("Enter Inmate Nationality: ");
-        String nation = sc.next();
-        
-        String stat = InmateStatus();
+            String sex = "";
 
-        System.out.print("Enter Record Quantity: ");
-        int rec_quan = sc.nextInt();
-        
-        System.out.println("1: Low Security Inmate");
-        System.out.println("2: Medium Security Inmate");
-        System.out.println("3: High Security Inmate");
-        System.out.println("4: Maximum Security Inmate");
-        System.out.println("5: Death Row Inmate");
-        
-        System.out.print("Enter Inmate Type: ");
-        int type = Validations.ChoiceValidation(1,5);
-        
-        String in_type = "";
-        
-            switch(type){
-                case 1: in_type = "Low Security"; break;
-                case 2: in_type = "Medium Security"; break;
-                case 3: in_type = "High Security"; break;
-                case 4: in_type = "Maximum Security"; break; 
-                case 5: in_type = "Death Row Inmate"; break;
+            switch (genderChoice) {
+                case 1: sex = "Male"; break;
+                case 2: sex = "Female"; break;
+                case 3: sex = "Other"; break;
                 default:
-                    System.out.println("Invalid Choice: ");
+                    sex = "Alien";
+                    System.out.println("Invalid choice, defaulting to Alien");
+                    break;
             }
 
-        System.out.print("Enter Date Apprehended: ");
-        String appre = sc.next();
-        
-        System.out.print("Enter Inmate Date Registered: ");
-        String date = sc.next();
-        
-        String sql;
-        
-        sql = "INSERT INTO inmate(i_name, i_age, i_gender, i_nationality, i_impri, i_stat, i_record_quan, i_type, i_apprehended,"
-                + " i_date_register) VALUES (?,?,?,?,?,?,?,?,?,?)";
-        int inmate = config.addRecordAndReturnId(sql, name, age, sex, nation, 0, stat, rec_quan, in_type, appre, 
-            date);
+            System.out.print("\nEnter Inmate Nationality: ");
+            String nation = sc.next();
 
-        sql = "INSERT INTO history(h_name, h_date, h_context, i_id) VALUES(?,?,?,?)";
-        int history = archive.addRecordAndReturnId(sql, name, date, "Added Inmate", inmate);
+            System.out.println("");
+            System.out.print("\n ----- Status Options ----- \n");
+            String stat = InmateStatus();
 
-        sql = "INSERT INTO type(t_name, t_level, i_id) VALUES (?,?,?)";
-        int type_id = config.addRecordAndReturnId(sql, name, in_type, inmate);
-        
-        System.out.println("Inmate Record: ");
-            
-            int x;
-            
-            for(x = 0; x < rec_quan; x++){
-            System.out.print("Enter Record Name " + (x+1) +": ");
-            String rec_name = sc.next();
-            
-            System.out.println("Record Status: ");
-            String rec_stat = RecordStatus();
-            
-            System.out.print("Conviction Time: ");
-            int convict = sc.nextInt();
-            
-            sql = "INSERT INTO record(r_name, r_stat, r_conviction_time, i_id) VALUES (?,?,?,?,?)";
-            int record = config.addRecordAndReturnId(sql, rec_name, rec_stat, convict, inmate);
-    
-            sql = "INSERT INTO a_record(name, status, conviction_time, i_id) VALUES (?,?,?,?)";
-            int archive_record = archive.addRecordAndReturnId(sql, rec_name, rec_stat, convict, inmate);
-            
-                System.out.println("Appending Record: ");
-                System.out.println("Inmate Recorded Succesfully: ");
+            System.out.println("\n ----- Type Options ----- ");
+            System.out.println("1: Low Security Inmate");
+            System.out.println("2: Medium Security Inmate");
+            System.out.println("3: High Security Inmate");
+            System.out.println("4: Maximum Security Inmate");
+            System.out.println("5: Death Row Inmate");
+
+            System.out.print(" -- Enter Inmate Type: -- ");
+            System.out.print("\nChoice: ");
+            int type = Validations.ChoiceValidation(1,5);
+            System.out.println("============================");
+
+            String in_type = "";
+
+                switch(type){
+                    case 1: in_type = "Low Security"; break;
+                    case 2: in_type = "Medium Security"; break;
+                    case 3: in_type = "High Security"; break;
+                    case 4: in_type = "Maximum Security"; break; 
+                    case 5: in_type = "Death Row Inmate"; break;
+                    default:
+                        System.out.println("Invalid Choice: ");
+                }
                 
-            impri = impri + convict;
+            System.out.println(" ----- Date Apprehended ----- ");
+            System.out.print("\nYear: ");
+            String year = sc.next();
 
-            }
+            System.out.print("Month: ");
+            String month = sc.next();
+
+            System.out.print("Day: ");
+            String day = sc.next();
+            System.out.println("\n ======================== \n");
+            sc.nextLine();
+            String appre = year + "-" + month + "-" + day;
+
+            String date = Validations.Date();
             
-            sql = "INSERT INTO a_inmate(name, age, gender, nationality, impri, status, record_quan, type, date_apprehended,"
-                    + " date_registered, i_id) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
-            int archive_inmate = archive.addRecordAndReturnId(sql, name, age, sex, nation, impri, stat, rec_quan, 
-                    in_type, appre, date, inmate);
-            
-            sql = "UPDATE inmate SET i_impri = ? WHERE i_id = ?";
-            config.updateRecord(sql, impri, inmate);
+            System.out.print(" ----- Inmate Record ----- ");
+            System.out.print("\nEnter Record Quantity: ");
+            int rec_quan = sc.nextInt();
+
+            String sql = "INSERT INTO inmate(i_name, i_age, i_gender, i_nationality, i_impri, i_stat, i_record_quan, i_type, i_apprehended,"
+                    + " i_date_register, i_infoStatus) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+            int inmate = config.addRecordAndReturnId(sql, name, age, sex, nation, 0, stat, rec_quan, in_type, appre, date, "Imprisoned");
+
+            sql = "INSERT INTO logs(h_name, h_date, h_context, i_id) VALUES(?,?,?,?)";
+            int history = config.addRecordAndReturnId(sql, name, date, "Added Inmate", inmate);
+
+            sql = "INSERT INTO type(t_name, t_level, i_id) VALUES (?,?,?)";
+            int type_id = config.addRecordAndReturnId(sql, name, in_type, inmate);
+
+                int x;
+
+                for(x = 0; x < rec_quan; x++){
+                    System.out.print("\nEnter Record Name " + (x+1) +": ");
+                    String rec_name = sc.next();
+
+                    System.out.println("\n ----- Record Status ----- ");
+                    System.out.println("Record Status: ");
+                    String rec_stat = RecordStatus();
+                    System.out.println(" ====================== ");
+
+                    System.out.print("Conviction Time: ");
+                    int convict = sc.nextInt();
+
+                    System.out.println("\n ----- Commited Date ----- ");
+                    System.out.print("Year: ");
+                    year = sc.next();
+                    
+                    System.out.print("Month: ");
+                    month = sc.next();
+                    
+                    System.out.print("Day: ");
+                    day = sc.next();
+                    
+                    System.out.println(" ======================== ");
+                    
+                    String commited = year + "-" + month + "-" + day;
+
+                    sql = "INSERT INTO record(r_name, r_stat, r_conviction_time, i_id, r_date_commited, r_infoStatus) VALUES (?,?,?,?,?,?)";
+                    int record = config.addRecordAndReturnId(sql, rec_name, rec_stat, convict, inmate, commited, "Guilty");
+
+                        System.out.println("----- Appending Record: -----");
+                        System.out.println("Inmate Recorded Succesfully: ");
+
+                    impri = impri + convict;
+
+                    }
+
+                    sql = "UPDATE inmate SET i_impri = ? WHERE i_id = ?";
+                    config.updateRecord(sql, impri, inmate);
         }
     }
     
@@ -258,7 +282,6 @@ public class Main {
         System.out.println("\n--- DELETION MENU ---");
         Scanner sc = new Scanner(System.in);
         conf dbConfig = new conf();
-        archive_conf archive = new archive_conf();
         
         System.out.print("Do you want to view Inmate Records?(y-1/n-0): ");
         int ans = sc.nextInt();
@@ -285,8 +308,8 @@ public class Main {
             in_name = getname.get("i_name").toString();
         }
 
-        String sql = "INSERT INTO history(h_name, h_date, h_context, i_id) VALUES(?,?,?,?)";
-        archive.addRecordAndReturnId(sql, in_name, c_date, "Deleted Inmate", iid);
+        String sql = "INSERT INTO logs(h_name, h_date, h_context, i_id) VALUES(?,?,?,?)";
+        dbConfig.addRecordAndReturnId(sql, in_name, c_date, "Deleted Inmate", iid);
     }
     
     public static void viewInmateInformation(){
@@ -320,11 +343,10 @@ public class Main {
     
     }
     
-    public static void UpdateInmate(){
+    public static int UpdateInmate(){
         
         Scanner sc = new Scanner(System.in);
         conf config = new conf();
-        archive_conf archive = new archive_conf();
         System.out.println("\n--- UPDATE MENU ---");
         String sql;
         
@@ -337,11 +359,9 @@ public class Main {
         System.out.print("Choice: ");
         int ans = Validations.ChoiceValidation(1,2);
         
-        System.out.print("Do you want to see inmate List: (y-1/n-2): ");
+        System.out.print(" ========================= ");
+        System.out.print("\nDo you want to see inmate List: (y-1/n-2): ");
         int choice = Validations.ChoiceValidation(1,2);
-        
-        System.out.println("Enter Current Date: ");
-        String c_date = sc.next();
         
         int iid = 0;
         
@@ -361,10 +381,11 @@ public class Main {
         
         switch(ans){
             case 1:
+                System.out.println(" ----- Inmate Alternation Menu ------ ");
                 System.out.print("Enter inmate ID to change: ");
             int id = sc.nextInt();
 
-            System.out.println("Alternation Options: ");
+            System.out.println("\n ------ Alternation Options: ----- ");
             System.out.println("1: Name");
             System.out.println("2: Age");
             System.out.println("3: Gender");
@@ -374,20 +395,29 @@ public class Main {
             System.out.println("7: Type");
             System.out.println("8: Date Apprehended");
             System.out.println("9: Date Registered");
+            System.out.println("10: Exit");
+
+            System.out.println(" ============================== ");
 
             System.out.print("Select attribute to change: ");
             int alter = sc.nextInt();
+            
+            while(alter <= 0 || alter >= 11){
+                System.out.print("Invalid Choice: Enter Again: ");
+                alter = sc.nextInt();
+            }
+            System.out.println("");
 
-            String sqlUpdate = null, archiveUpdate = null;
+            String sqlUpdate = "";
+            Validations valid = new Validations();
 
             switch (alter) {
                 case 1: 
                     System.out.print("Enter new Inmate Name: ");
                     name = sc.next();
                     sqlUpdate = "UPDATE inmate SET i_name = ? WHERE i_id = ?";
-                    flag = config.updateRecord(sqlUpdate, name, id);
-                    archiveUpdate = "UPDATE a_inmate SET name = ? WHERE i_id = ?";
-                    archive.updateRecord(archiveUpdate, name, id);
+                    config.updateRecord(sqlUpdate, name, id);
+                    flag = 1;
                     alt_num = 1;
                     break;
                 case 2: 
@@ -399,45 +429,60 @@ public class Main {
                         age = sc.nextInt();
                     }
                     sqlUpdate = "UPDATE inmate SET i_age = ? WHERE i_id = ?";
-                    flag = config.updateRecord(sqlUpdate, age, id);
-                    archiveUpdate = "UPDATE a_inmate SET age = ? WHERE i_id = ?";
-                    archive.updateRecord(archiveUpdate, age, id);
+                    config.updateRecord(sqlUpdate, age, id);
+                    flag = 1;
                     alt_num = 2;
                     break;
                 case 3:
+                    System.out.println("\n ----- Gender Options ----- ");
+                    System.out.println("1: Male");
+                    System.out.println("2: Female");
+                    System.out.println("3: Other");
                     System.out.print("Enter new Gender: ");
-                    gender = sc.next();
+                    int genderChoice = sc.nextInt();
+                    
+                     while (genderChoice < 1 || genderChoice > 3) {
+                        System.out.println("Invalid choice. Please try again.");
+                        System.out.print("Enter new Gender (1–3): ");
+                        genderChoice = sc.nextInt();
+                    }
+                    String sex = "";
+                    switch(genderChoice){
+                        case 1: sex = "Male";
+                            break;
+                        case 2: sex = "Female";
+                            break;
+                        case 3: sex = "Other";
+                            break;
+                        } 
+                    
                     sqlUpdate = "UPDATE inmate SET i_gender = ? WHERE i_id = ?";
-                    flag = config.updateRecord(sqlUpdate, gender, id);
-                    archiveUpdate = "UPDATE a_inmate SET gender = ? WHERE i_id = ?";
-                    archive.updateRecord(archiveUpdate, gender, id);
+                    config.updateRecord(sqlUpdate, sex, id);
+                    flag = 1;
                     alt_num = 3;
                     break;
                 case 4:
                     System.out.print("Enter new Nationality: ");
                     nation = sc.next();
                     sqlUpdate = "UPDATE inmate SET i_nationality = ? WHERE i_id = ?";
-                    flag = config.updateRecord(sqlUpdate, nation, id);
-                    archiveUpdate = "UPDATE a_inmate SET nationality = ? WHERE i_id = ?";
-                    archive.updateRecord(archiveUpdate, nation, id);
+                    config.updateRecord(sqlUpdate, nation, id);
+                    flag = 1;
                     alt_num = 4;
                     break;
                 case 5:
                     System.out.print("Enter new Imprisonment Years: ");
                     int impri = sc.nextInt();
                     sqlUpdate = "UPDATE inmate SET i_impri = ? WHERE i_id = ?";
-                    flag = config.updateRecord(sqlUpdate, impri, id);
-                    archiveUpdate = "UPDATE a_inmate SET impri = ? WHERE i_id = ?";
-                    archive.updateRecord(archiveUpdate, impri, id);
+                    config.updateRecord(sqlUpdate, impri, id);
+                    flag = 1;
                     alt_num = 5;
                     break;
                 case 6:
                     System.out.println("Enter new Status: ");
                     status = InmateStatus();
                     sqlUpdate = "UPDATE inmate SET i_stat = ? WHERE i_id = ?";
-                    flag = config.updateRecord(sqlUpdate, status, id);
-                    archiveUpdate = "UPDATE a_inmate SET status = ? WHERE i_id = ?";
-                    archive.updateRecord(archiveUpdate, status, id);
+                    config.updateRecord(sqlUpdate, status, id);
+                    flag = 1;
                     alt_num = 6;
                     break;
                 case 7:
@@ -458,65 +503,62 @@ public class Main {
                         case 5: in_type = "Death Row Inmate"; break;
                     }
                     sqlUpdate = "UPDATE inmate SET i_type = ? WHERE i_id = ?";
-                    flag = config.updateRecord(sqlUpdate, in_type, id);
-                    archiveUpdate = "UPDATE a_inmate SET type = ? WHERE i_id = ?";
-                    archive.updateRecord(archiveUpdate, in_type, id);
+                    config.updateRecord(sqlUpdate, in_type, id);
+                    flag = 1;
                     alt_num = 7;
                     break;
                 case 8:
                     System.out.print("Enter new Date Apprehended (YYYY-MM-DD): ");
                     appre = sc.next();
                     sqlUpdate = "UPDATE inmate SET i_apprehended = ? WHERE i_id = ?";
-                    flag = config.updateRecord(sqlUpdate, appre, id);
-                    archiveUpdate = "UPDATE a_inmate SET date_apprehended = ? WHERE i_id = ?";
-                    archive.updateRecord(archiveUpdate, appre, id);
+                    config.updateRecord(sqlUpdate, appre, id);
+                    flag = 1;
                     alt_num = 8;
                     break;
                 case 9:
                     System.out.print("Enter new Date Registered (YYYY-MM-DD): ");
                     regis = sc.next();
                     sqlUpdate = "UPDATE inmate SET i_date_register = ? WHERE i_id = ?";
-                    flag = config.updateRecord(sqlUpdate, regis, id);
-                    archiveUpdate = "UPDATE a_inmate SET date_register = ? WHERE i_id = ?";
-                    archive.updateRecord(archiveUpdate, regis, id);
+                    config.updateRecord(sqlUpdate, regis, id);
+                    flag = 1;
                     alt_num = 9;
                     break;
+                case 10:
+                    System.out.println("Select Info Status:");
+                    System.out.println("1: Imprisoned");
+                    System.out.println("2: Released");
+                    System.out.print("Choice: ");
+                    int infoChoice = Validations.ChoiceValidation(1, 2);
+                    
+                    String stat = "";
+                    switch(infoChoice){
+                        case 1: stat = "Imprisoned";
+                            break;
+                        case 2: stat = "Released";
+                            break;
+                    }
+                    sqlUpdate = "UPDATE inmate SET i_infoStatus = ? WHERE i_id = ?";
+                    config.updateRecord(sqlUpdate, stat, id);
+                    flag = 1;
+                    alt_num = 10;
+                    break;
+                case 11: 
+                    System.out.println("Exiting . . ."); 
+                    return 0;
+
                 default:
                     System.out.println("Invalid option selected.");
-                    return;
+                    return 0;
             }
 
             if (flag == 1) {
                 System.out.println("Inmate Successfully Updated: ");
             }
+            
+            System.out.println("Added Logs");
+            ContextGetter(alt_num, flag, id);
 
-            String context = "";
-            switch (alt_num) {
-                case 1: context = "Altered Name"; break;
-                case 2: context = "Altered Age"; break;
-                case 3: context = "Altered Gender"; break;
-                case 4: context = "Altered Nationality"; break;
-                case 5: context = "Altered Imprisonment Years"; break;
-                case 6: context = "Altered Inmate Status"; break;
-                case 7: context = "Altered Inmate Type"; break;
-                case 8: context = "Altered Date of Apprehension"; break;
-                case 9: context = "Altered Date of Registration"; break;
-                default: context = "Invalid option"; break;
-            }
-
-            String in_name = "";
-            if (flag == 1) {
-                String sqlQuery = "SELECT i_name FROM inmate WHERE i_id = ?";
-                List<Map<String, Object>> result = config.fetchRecords(sqlQuery, id);
-
-                if (!result.isEmpty()) {
-                    java.util.Map<String, Object> getname = result.get(0);
-                    in_name = getname.get("i_name").toString();
-                }
-
-                sql = "INSERT INTO history(h_name, h_date, h_context, i_id) VALUES(?,?,?,?)";
-                archive.addRecordAndReturnId(sql, in_name, c_date, context, id);
-            }
+            
             break;
         
         case 2:  //Update Record
@@ -536,96 +578,100 @@ public class Main {
                     System.out.print("Enter Inmate Record ID: ");
                     int rec_id = sc.nextInt();
 
-                    System.out.println("Alternation Options: ");
+                    System.out.println(" ----- Alternation Options: ----- ");
                     System.out.println("1: Record Name");
                     System.out.println("2: Status");
                     System.out.println("3: Conviction Time");
-                    System.out.println("4: Total Imprisonment(disabled temporarily)");
+                    System.out.println("4: Date Commision");
+                    System.out.println("5: Case Status");
+                    System.out.println("6: Exit");
 
-                    System.out.print("Select attribute to change: ");
+                    System.out.print("Invalid Choice: Enter Again: ");
                     alter = sc.nextInt();
+                    
+                    while(alter <= 0 || alter >= 7){
+                        System.out.println("Invalid Choice: ");
+                        alter = sc.nextInt();
+                    }
 
                     switch (alter) {
                         case 1:
                             System.out.print("Enter new Record Name: ");
                             name = sc.next();
                             String sqlUpdateName = "UPDATE record SET r_name = ? WHERE r_id = ?";
-                            flag = config.updateRecord(sqlUpdateName, name, rec_id);
-                            archiveUpdate = "UPDATE a_record SET name = ? WHERE i_id = ?";
-                            archive.updateRecord(archiveUpdate, name, rec_id);
-                            alt_num = 10;
+                            config.updateRecord(sqlUpdateName, name, rec_id);
+                            flag = 1;
+                            alt_num = 11;
                             break;
 
                         case 2:
                             System.out.print("Enter new Record Status: ");
                             String stat = RecordStatus();
                             String sqlUpdateStatus = "UPDATE record SET r_stat = ? WHERE r_id = ?";
-                            flag = config.updateRecord(sqlUpdateStatus, stat, rec_id);
-                            archiveUpdate = "UPDATE a_record SET status = ? WHERE i_id = ?";
-                            archive.updateRecord(archiveUpdate, stat, rec_id);
-                            alt_num = 11;
+                            config.updateRecord(sqlUpdateStatus, stat, rec_id);
+                            flag = 1;
+                            alt_num = 12;
                             break;
 
                         case 3:
                             System.out.print("Enter new Conviction Time: ");
                             String conv = sc.next();
                             String sqlUpdateConviction = "UPDATE record SET r_conviction_time = ? WHERE r_id = ?";
-                            flag = config.updateRecord(sqlUpdateConviction, conv, rec_id);
-                            archiveUpdate = "UPDATE a_record SET conviction_time = ? WHERE i_id = ?";
-                            archive.updateRecord(archiveUpdate, conv, rec_id);
-                            alt_num = 12;
-                            break;
-
-                        case 4:
-                            System.out.print("Enter Total Imprisonment: ");
-                            String impri = sc.next();
-                            String sqlUpdateImprisonment = "UPDATE record SET r_total_impri = ? WHERE r_id = ?";
-                            flag = config.updateRecord(sqlUpdateImprisonment, impri, rec_id);
-                            archiveUpdate = "UPDATE a_record SET i_name = ? WHERE i_id = ?";
-                            archive.updateRecord(archiveUpdate, impri, rec_id);
+                            config.updateRecord(sqlUpdateConviction, conv, rec_id);
+                            flag = 1;
                             alt_num = 13;
                             break;
+                        case 4:
+                            System.out.print("Enter Date Commited: ");
+                            String commit = sc.next();
+                            String sqlUpdateCommit = "UPDATE record SET r_date_commited = ? WHERE r_id = ?";
+                            config.updateRecord(sqlUpdateCommit, commit, rec_id);
+                            flag = 1;
+                            alt_num = 14;
+                            break;
+                        case 5: 
+                            System.out.println("Select Info Status:");
+                            System.out.println("1: Active Record");
+                            System.out.println("2: Closed Record");
+                            System.out.print("Choice: ");
+                            int infoChoice = Validations.ChoiceValidation(1, 2);
+
+                            stat = "";
+                            switch(infoChoice){
+                                case 1: stat = "Active Record";
+                                    break;
+                                case 2: stat = "Closed Record";
+                                    break;
+                            }
+                            String sqlUpdateInfo = "UPDATE record SET r_recordStatus = ? WHERE r_id = ?";
+                            config.updateRecord(sqlUpdateInfo, stat, rec_id);
+                            flag = 1;
+                            alt_num = 15;
+                            break;
+                        case 6: 
+                            System.out.println("Exiting . . ."); 
+                            return 0;
 
                         default:
                             System.out.println("Invalid option selected.");
                             break;
                     }
-
+                    
                     if (flag == 1) {
                         System.out.println("Inmate Record Successfully Updated");
                     }
+                    
+                System.out.println("Added Logs");
+                ContextGetter(alt_num, flag, iid);
 
-                    context = "";
-                    switch (alt_num) {
-                        case 10: context = "Altered Record Name"; break;
-                        case 11: context = "Altered Record Status"; break;
-                        case 12: context = "Altered Conviction Time"; break;
-                        case 13: context = "Altered Total Imprisonment"; break;
-                        default: context = "Invalid option"; break;
-                    }
-
-                    in_name = "";
-                    if (flag == 1) {
-                        String sqlQuery = "SELECT i_name FROM inmate WHERE i_id = ?";
-                        List<Map<String, Object>> result = config.fetchRecords(sqlQuery, iid);
-
-                        if (!result.isEmpty()) {
-                            java.util.Map<String, Object> getname = result.get(0);
-                            in_name = getname.get("i_name").toString();
-                        }
-
-                        sql = "INSERT INTO history(h_name, h_date, h_context, i_id) VALUES(?,?,?,?)";
-                        archive.addRecordAndReturnId(sql, in_name, c_date, context, iid);
-                    }
-                    ; 
-                    break;
                 default:
                     System.out.println("Invalid Choice: ");
             }
             
-            
             break;
         }
+        return 0;
+        
     }
     
     public static void AddRecord(int iid){
@@ -659,6 +705,14 @@ public class Main {
         
         sql = "UPDATE inmate SET i_record_quan = ? WHERE i_id = ?";
         config.updateRecord(sql, res, iid);
+        
+        String qry = "SELECT * FROM users WHERE i_id = ?";
+        java.util.List<java.util.Map<String, Object>> result = config.fetchRecords(qry, iid);
+        
+        java.util.Map<String, Object> user = result.get(0);
+        String name = user.get("u_approval").toString();
+        
+        // sql = "INSERT INTO logs(i_id)" need some work add insert logs here, and add session
     }
     
     public static void RemoveRecord(int iid){
@@ -680,5 +734,45 @@ public class Main {
         
         sql = "UPDATE inmate SET i_record_quan = ? WHERE i_id = ?";
         config.updateRecord(sql, res, iid);
+    }
+    
+    public static void ContextGetter(int alt_num, int flag, int id){
+        conf config = new conf();
+        
+        String date = Validations.Date();
+        
+        String context = "", sql = "";
+            switch (alt_num) {
+                case 1: context = "Altered Name"; break;
+                case 2: context = "Altered Age"; break;
+                case 3: context = "Altered Gender"; break;
+                case 4: context = "Altered Nationality"; break;
+                case 5: context = "Altered Imprisonment Years"; break;
+                case 6: context = "Altered Inmate Status"; break;
+                case 7: context = "Altered Inmate Type"; break;
+                case 8: context = "Altered Date of Apprehension"; break;
+                case 9: context = "Altered Date of Registration"; break;
+                case 10: context = "Altered Inmate Data Status"; break;
+                case 11: context = "Altered Record Name"; break;
+                case 12: context = "Altered Record Status"; break;
+                case 13: context = "Altered Conviction Time"; break;
+                case 14: context = "Altered Total Imprisonment"; break;
+                case 15: context = "Altered Case Status"; break;
+                default: context = "Invalid option"; break;
+            }
+
+            String in_name = "";
+            if (flag == 1) {
+                String sqlQuery = "SELECT * FROM inmate WHERE i_id = ?";
+                List<Map<String, Object>> result = config.fetchRecords(sqlQuery, id);
+
+                if (!result.isEmpty()) {
+                    java.util.Map<String, Object> getname = result.get(0);
+                    in_name = getname.get("i_name").toString();
+                }
+
+                sql = "INSERT INTO logs(h_name, h_date, h_context, i_id) VALUES(?,?,?,?)";
+                config.addRecordAndReturnId(sql, in_name, date, context, id);
+            }
     }
 }

@@ -4,6 +4,7 @@ package Main;
 import Config.Validations;
 import Config.conf;
 import java.util.Scanner;
+import java.time.LocalDate;
 
 public class Log_Reg {
     
@@ -12,6 +13,8 @@ public class Log_Reg {
         conf config = new conf();
         int sec_code = 123456;
         String log_role = "";
+        
+        System.out.println("\n ----- Register Menu -----");
         
         System.out.print("Enter User Name: ");
         String name = sc.next();
@@ -38,11 +41,12 @@ public class Log_Reg {
         }
 
         int pos;
-            System.out.println("Position: ");
+            System.out.println("\n ----- Position: ----- ");
             System.out.println("1: Behavioral Staff's");
             System.out.println("2: Higher Officials");
             System.out.println("3: Staff");
             System.out.println("4: Legal Authorities");
+            System.out.println("=====================");
 
             System.out.print("Choice: ");
             pos = Validations.ChoiceValidation(1,4);
@@ -66,27 +70,11 @@ public class Log_Reg {
                     System.out.println("Try Again: ");
             }
 
-        int checked = 0;
+        String sql = "INSERT INTO users(u_name, u_pass, u_position, u_badge, u_approval, date_added) VALUES (?,?,?,?,?,?)";
+        int u_id = config.addRecordAndReturnId(sql, name, HashPass, log_role, badge, "Pending", Date());
 
-        do{
-            System.out.print("Enter Security Log In Code: ");
-            int in_code = sc.nextInt();
-
-            if(in_code == sec_code){
-                System.out.println("Registered Succesfull: ");
-                checked = 1;
-            }else{
-                System.out.println("Invalid Code: ");
-            }
-
-        }while(checked == 0);
-
-
-        String sql = "INSERT INTO users(u_name, u_pass, u_position, u_badge, u_approval) VALUES (?,?,?,?,?)";
-        config.addRecord(sql, name, HashPass, log_role, badge, "Pending");
-
-        sql = "INSERT INTO admin(user_name, user_true_pass, user_badge) VALUES (?,?,?)";
-        config.addRecord(sql, name, pass, badge);
+        sql = "INSERT INTO admin(u_id, user_name, user_true_pass, user_badge) VALUES (?,?,?,?)";
+        config.addRecord(sql, u_id, name, pass, badge);
 
     }
     
@@ -96,6 +84,9 @@ public class Log_Reg {
         int flag = 0, pos;
         Scanner sc = new Scanner(System.in);
         conf config = new conf();
+        boolean run = true;
+        
+        System.out.println("\n ----- Log In Menu -----");
         
         do{
             System.out.print("Enter User Name: ");
@@ -109,28 +100,9 @@ public class Log_Reg {
             System.out.print("Badge ID: ");
             String log_badge = sc.next();
 
-                System.out.println("Position: ");
-                System.out.println("1: Behavioral Staff's");
-                System.out.println("2: Higher Officials");
-                System.out.println("3: Staff");
-                System.out.println("4: Legal Authorities");
-
-                System.out.print("Choice: ");
-                pos = Validations.ChoiceValidation(1,4);
-
-                switch(pos){
-                    case 1: log_role = "Behavioral Staff's"; break;
-                    case 2: log_role = "Higher Officials"; break;
-                    case 3: log_role = "Staff"; break;
-                    case 4: log_role = "Legal Authorities"; break;
-                    default:
-                        System.out.println("Invalid choice. Try again.");
-                }   
-
-            
-            while (true) {
-                String qry = "SELECT * FROM users WHERE u_name = ? AND u_pass = ? AND u_position = ? AND u_badge = ?";
-                java.util.List<java.util.Map<String, Object>> result = config.fetchRecords(qry, log_name, hashPass, log_role, log_badge);
+            while (run) {
+                String qry = "SELECT * FROM users WHERE u_name = ? AND u_pass = ? AND u_badge = ?";
+                java.util.List<java.util.Map<String, Object>> result = config.fetchRecords(qry, log_name, hashPass, log_badge);
                 
                 if (result.isEmpty()) {
                     System.out.println("INVALID CREDENTIALS");
@@ -140,18 +112,22 @@ public class Log_Reg {
                 } else {
                     java.util.Map<String, Object> user = result.get(0);
                     String stat = user.get("u_approval").toString();
-                    String position = user.get("u_position").toString();
+                    String posi = user.get("u_position").toString();
+                    
+                    
                     switch (stat) {
                         case "Pending":
                             System.out.println("Account is Pending, Contact the Higher Officials!");
+                            run = false;
                             break;
                         case "Disabled":
                             System.out.println("Account Disabled: Contact Admin");
+                            run = false;
                             break;
                         default:
                             System.out.println("LOGIN SUCCESS!");
                             flag = 0;
-                            switch (position) {
+                            switch (posi) {
                                 case "Behavioral Staff's":
                                     Bh behavioral = new Bh();
                                     behavioral.Behavioral();
@@ -178,5 +154,12 @@ public class Log_Reg {
                 }
             }
         }while(flag == 1);
+    }
+    
+    public static String Date(){
+        Object c_date = LocalDate.now();
+        String date = c_date.toString();
+        
+        return date;
     }
 }

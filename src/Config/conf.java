@@ -47,9 +47,9 @@ public void addRecord(String sql, Object... values) {
         }
 
         pstmt.executeUpdate();
-        System.out.println("Record added successfully!");
+        System.out.println("\n ----- Record added successfully! ----- ");
     } catch (SQLException e) {
-        System.out.println("Error adding record: " + e.getMessage());
+        System.out.println("\n +++++ Error adding record: " + e.getMessage() + " +++++ ");
     }
 }
     
@@ -174,9 +174,9 @@ public int addRecordAndReturnId(String query, Object... params) {
             }
 
             pstmt.executeUpdate();
-            System.out.println("Record updated successfully!");
+            System.out.println("\nRecord updated successfully!");
         } catch (SQLException e) {
-            System.out.println("Error updating record: " + e.getMessage());
+            System.out.println("\nError updating record: " + e.getMessage());
             return 0;
         }
         return 1;

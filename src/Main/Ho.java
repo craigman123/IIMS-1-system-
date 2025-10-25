@@ -29,11 +29,7 @@ public class Ho {
             int choice = Validations.ChoiceValidation(1,6);
 
             switch (choice) {
-                case 1:
-                    System.out.print("Inmate Quantity: ");
-                    int count = sc.nextInt();
-                    AddInmate(count);
-                    break;
+                case 1: AddInmate(); break;
                 case 2: UpdateInmate(); break;
                 case 3: deleteInmateRecord(); break;
                 case 4: 

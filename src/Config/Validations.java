@@ -2,6 +2,7 @@
 package Config;
 
 import java.util.Scanner;
+import java.time.LocalDate;
 
 public class Validations {
     
@@ -30,5 +31,12 @@ public class Validations {
             ans = sc.nextInt();
         }
         return ans;
+    }
+    
+    public static String Date(){
+        Object cd = LocalDate.now();
+        String date = cd.toString();
+        
+        return date;
     }
 }
