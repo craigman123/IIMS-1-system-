@@ -4,7 +4,7 @@ package Main;
 import Config.Validations;
 import Config.conf;
 import java.util.Scanner;
-import java.time.LocalDate;
+import java.time.*;
 
 public class Log_Reg {
     
@@ -78,13 +78,14 @@ public class Log_Reg {
 
     }
     
-    public static void LogIn(){
+    public static int LogIn(){
         
         String log_role = "";
         int flag = 0, pos;
         Scanner sc = new Scanner(System.in);
         conf config = new conf();
         boolean run = true;
+        Session ses = new Session();
         
         System.out.println("\n ----- Log In Menu -----");
         
@@ -113,7 +114,7 @@ public class Log_Reg {
                     java.util.Map<String, Object> user = result.get(0);
                     String stat = user.get("u_approval").toString();
                     String posi = user.get("u_position").toString();
-                    
+                    int id = ((Number) user.get("u_id")).intValue();
                     
                     switch (stat) {
                         case "Pending":
@@ -131,29 +132,30 @@ public class Log_Reg {
                                 case "Behavioral Staff's":
                                     Bh behavioral = new Bh();
                                     behavioral.Behavioral();
+                                    return ses.Session(id);
                                     
-                                    break;
                                 case "Higher Officials":
                                     Ho higher = new Ho();
                                     higher.Higher();
-                                    
-                                    break;
+                                    return ses.Session(id);
+                            
                                 case "Staff":
                                     Staff st = new Staff();
                                     st.Staff();
-                                    
-                                    break;
+                                    return ses.Session(id);
+                       
                                 case "Legal Authorities":
                                     La authorities = new La();
                                     authorities.Authorities();
-                                    
-                                    break;
+                                    return ses.Session(id);
+                                   
                             }
                             break;
                     }
                 }
             }
         }while(flag == 1);
+        return 0;
     }
     
     public static String Date(){

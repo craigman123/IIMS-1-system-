@@ -6,10 +6,11 @@ import Config.conf;
 import Config.Validations;
 
 public class Main {
-    public static void main(String[] args) {
+    public static int main(String[] args) {
     
         Scanner sc = new Scanner(System.in);
         Log_Reg lgreg = new Log_Reg();
+        Session ses = new Session();
                 
         while(true){
         System.out.println(" ----- Welcome to the System: ----- ");
@@ -37,8 +38,8 @@ public class Main {
                 System.out.println("GoodBye!");
                 sc.close();
                 System.exit(0);
+                return ses.Session(0);
                 
-                break;
             default:
                 System.out.println("Invalid Choice: ");
                 
