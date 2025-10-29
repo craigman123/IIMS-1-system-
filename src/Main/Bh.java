@@ -48,7 +48,8 @@ public class Bh {
                    break;
                 case 3:
                     
-                    System.out.println("Logging Out: ");
+                    System.out.println("Logging Out. . .  ");
+                    Session.endSession();
                     run = false;
                     break;
                 default:

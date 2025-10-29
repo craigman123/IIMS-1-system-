@@ -48,7 +48,8 @@ public class Staff {
                     }  
                     break;
                 case 4:
-                    System.out.println("Logging out...");
+                    System.out.println("Logging out. . . ");
+                    Session.endSession();
                     run = false;
                     break;
                 default:

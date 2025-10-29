@@ -12,7 +12,7 @@ public class Manage_User {
         boolean run = true;
         
         while(run){
-        System.out.println("===== User Manager =====");
+        System.out.println("\n===== User Manager =====");
         System.out.println("1: Add User");
         System.out.println("2: Update User");
         System.out.println("3: Delete User");
@@ -115,12 +115,12 @@ public class Manage_User {
         conf config = new conf();
         String stat = "", ps = "";
         
-        System.out.println("===== Add User =====");
+        System.out.println("\n===== Add User =====");
         
         System.out.print("Enter Name: ");
         String name = sc.next();
         
-        System.out.println("Enter Password: ");
+        System.out.print("Enter Password: ");
         String pass = sc.next();
         
         String hashPass = config.hashPassword(pass);
@@ -130,18 +130,18 @@ public class Manage_User {
         
         while (true) {
                             
-            String qry = "SELECT * FROM users WHERE u_name = ?";
+            String qry = "SELECT * FROM users WHERE u_badge = ?";
             java.util.List<java.util.Map<String, Object>> result = config.fetchRecords(qry, badge);
 
             if (result.isEmpty()) {
                 break;
             } else {
-                System.out.print("User Name already exists, Enter Again: ");
-                name = sc.next();
+                System.out.print("User Badge already exists, Enter Again: ");
+                badge = sc.next();
             }
         }
         
-        System.out.println("Position: ");
+        System.out.println("\n===== Position: ===== ");
         System.out.println("1: Behavioral Staff's");
         System.out.println("2: Higher Officials");
         System.out.println("3: Staff");
@@ -159,10 +159,11 @@ public class Manage_User {
                 System.out.println("Invalid Position: ");
         }
         
+        System.out.println("\n ========================");
         System.out.println("1: Approved");
         System.out.println("2: Pending");
         System.out.println("3: Disabled");
-        System.out.print("User Status: ");
+        System.out.print("Account Status: ");
         int status = Validations.ChoiceValidation(1,3);
         
         switch(status){
@@ -176,10 +177,10 @@ public class Manage_User {
         String sql = "INSERT INTO users(u_name, u_pass, u_position, u_badge, u_approval) VALUES (?,?,?,?,?)";
         config.addRecordAndReturnId(sql, name, hashPass, ps, badge, stat);
         
-        sql = "INSERT INTO admin(user_name, user_true_password, user_badge ) VALUES (?,?,?)";
-        config.addRecordAndReturnId(sql, name, hashPass, badge);
+        sql = "INSERT INTO admin(user_name, user_true_pass, user_badge ) VALUES (?,?,?)";
+        int get = config.addRecordAndReturnId(sql, name, pass, badge);
         
-        if(!sql.isEmpty()){
+        if(get > 0){
             System.out.println("User Succesfully Added: ");
         }
     }

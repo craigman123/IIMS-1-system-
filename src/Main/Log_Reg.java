@@ -87,11 +87,15 @@ public class Log_Reg {
         boolean run = true;
         Session ses = new Session();
         
-        System.out.println("\n ----- Log In Menu -----");
+        System.out.println("\n------ Log In Menu -----");
+        System.out.println("------ 0 to cancel -----");
         
         do{
             System.out.print("Enter User Name: ");
             String log_name = sc.next();
+            if(ExitTrigger(log_name)){
+                return 0;
+            }
 
             System.out.print("Enter Password: ");
             String log_pass = sc.next();
@@ -101,15 +105,13 @@ public class Log_Reg {
             System.out.print("Badge ID: ");
             String log_badge = sc.next();
 
-            while (run) {
                 String qry = "SELECT * FROM users WHERE u_name = ? AND u_pass = ? AND u_badge = ?";
                 java.util.List<java.util.Map<String, Object>> result = config.fetchRecords(qry, log_name, hashPass, log_badge);
                 
                 if (result.isEmpty()) {
-                    System.out.println("INVALID CREDENTIALS");
-                    System.out.println("Enter Again: ");
+                    System.out.println("\n ----- INVALID CREDENTIALS ----- ");
+                    System.out.println(" -------- Enter Again: --------- ");
                     flag = 1;
-                    break;
                 } else {
                     java.util.Map<String, Object> user = result.get(0);
                     String stat = user.get("u_approval").toString();
@@ -119,41 +121,45 @@ public class Log_Reg {
                     switch (stat) {
                         case "Pending":
                             System.out.println("Account is Pending, Contact the Higher Officials!");
-                            run = false;
-                            break;
+                            return 0;
+                            
                         case "Disabled":
                             System.out.println("Account Disabled: Contact Admin");
-                            run = false;
-                            break;
+                            return 0;
+                            
                         default:
                             System.out.println("LOGIN SUCCESS!");
                             flag = 0;
+                            
                             switch (posi) {
                                 case "Behavioral Staff's":
                                     Bh behavioral = new Bh();
+                                    Session.Session(id);
                                     behavioral.Behavioral();
-                                    return ses.Session(id);
+                                    break;
                                     
                                 case "Higher Officials":
                                     Ho higher = new Ho();
+                                    Session.Session(id);
                                     higher.Higher();
-                                    return ses.Session(id);
+                                    break;
                             
                                 case "Staff":
                                     Staff st = new Staff();
+                                    Session.Session(id);
                                     st.Staff();
-                                    return ses.Session(id);
+                                    break;
                        
                                 case "Legal Authorities":
                                     La authorities = new La();
+                                    Session.Session(id);
                                     authorities.Authorities();
-                                    return ses.Session(id);
+                                    break;
                                    
                             }
-                            break;
                     }
                 }
-            }
+            
         }while(flag == 1);
         return 0;
     }
@@ -163,5 +169,13 @@ public class Log_Reg {
         String date = c_date.toString();
         
         return date;
+    }
+    
+   public static boolean ExitTrigger(Object num) {
+    if (num != null && num.equals("0")) {
+        System.out.println("Returning to main menu...");
+        return true;
+        }
+    return false; 
     }
 }

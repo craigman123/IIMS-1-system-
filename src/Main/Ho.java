@@ -22,7 +22,7 @@ public class Ho {
             System.out.println("2: Update Inmate");
             System.out.println("3: Delete Inmate");
             System.out.println("4: View Record");
-            System.out.println("5: Manage Users(Still figuring Out how to Proper CRUD)");
+            System.out.println("5: Manage Users");
             System.out.println("6: Log Out");
             System.out.print("Enter Choice: ");
 
@@ -34,7 +34,7 @@ public class Ho {
                 case 3: deleteInmateRecord(); break;
                 case 4: 
                     
-                    System.out.println("Do you want to check Records?");
+                    System.out.println("\nDo you want to check Records?");
                     System.out.println("1: YES");
                     System.out.print("2: NO");
                     System.out.print("\nChoice: ");
@@ -56,6 +56,7 @@ public class Ho {
                     break;
                 case 6:
                     System.out.println("Logging out...");
+                    Session.endSession();
                     run = false;
                     break;
                 default:

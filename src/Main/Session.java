@@ -1,38 +1,73 @@
-
 package Main;
 
 import Config.conf;
-import java.time.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Session {
-    public static int Session(int id){
-        conf config = new conf();
+
+    private static int userId;
+    private static boolean active = false;
+    private static String loginTime;
+    private static int session_id;
+    
+    public static int getBadge(){
+        conf config =  new conf();
         
-        LocalTime time = LocalTime.now();
-        LocalDate date = LocalDate.now();
+        String qry = "SELECT u_badge FROM users WHERE u_id = ?";
+        java.util.List<java.util.Map<String, Object>> result = config.fetchRecords(qry, userId);
         
-            if(id != 0){
-                
-                String sql = "SELECT * FROM users WHERE i_id = ?";
-                java.util.List<java.util.Map<String, Object>> result = config.fetchRecords(sql, id);
-               
-                java.util.Map<String, Object> user = result.get(0);
-                String badge = user.get("u_badge").toString();
-                
-                sql = "INSERT INTO session(u_id, s_badge, s_date, s_time, s_context) VALUES (?,?,?,?,?)";
-                config.addRecord(sql, id, badge, date, time, "Logged In");
-                
-            }else if(id == 0){
-                
-                String sql = "SELECT * FROM session WHERE i_id = ?";
-                java.util.List<java.util.Map<String, Object>> result = config.fetchRecords(sql, id);
-               
-                java.util.Map<String, Object> user = result.get(0);
-                String badge = user.get("u_badge").toString();
-                
-                sql = "INSERT INTO session(u_id, s_badge, s_date, s_time, s_context) VALUES (?,?,?,?,?)";
-                config.addRecord(sql, id, badge, date, time, "Logged Out");
-            }
+        if (result.isEmpty()) {
+            System.out.println("Id not found: ");
+        } else {
+        java.util.Map<String, Object> user = result.get(0);
+        String badge = user.get("u_badge").toString();
+        
+        return Integer.parseInt(badge);
+        
+        }
         return 0;
     }
+
+    public static int Session(int id) {
+        
+        boolean run = true;
+        userId = id;
+        active = true;
+        loginTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+        System.out.println("\nSession started for user ID: " + userId);
+        System.out.println("Login Time: " + loginTime);
+
+        conf config = new conf();
+        String sql = "INSERT INTO session_logs (u_id, login, s_badge) VALUES (?,?,?)";
+        
+        while(run){
+        session_id = config.addRecordAndReturnId(sql, userId, loginTime, getBadge());
+        run = false;
+        return session_id;
+        
+        }
+
+        return userId;
+    }
+
+    public static void endSession() {
+        if (active) {
+            conf config = new conf();
+            String logoutTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            String sql = "UPDATE session_logs SET logout = ? WHERE s_id = ?";
+            config.addRecordAndReturnId(sql, logoutTime, session_id);
+
+            System.out.println("\nSession ended for user ID: " + userId);
+            System.out.println("Logout Time: " + logoutTime);
+
+            active = false;
+        }else{
+            System.out.println("No active session to end: ");
+        }
+    }
+
+    public static int getUserId() { 
+        return userId; }
 }

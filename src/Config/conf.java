@@ -76,11 +76,12 @@ public int addRecordAndReturnId(String query, Object... params) {
         return generatedId;
     }
     
-     public void viewRecords(String sqlQuery, String[] columnHeaders, String[] columnNames) {
+     public int viewInmate(String sqlQuery, String[] columnHeaders, String[] columnNames) {
+         int count = 0;
         // Check that columnHeaders and columnNames arrays are the same length
         if (columnHeaders.length != columnNames.length) {
             System.out.println("Error: Mismatch between column headers and column names.");
-            return;
+            return 0;
         }
 
         try (Connection conn = this.connectDB();
@@ -105,6 +106,7 @@ public int addRecordAndReturnId(String query, Object... params) {
 
             // Print the rows dynamically based on the provided column names
             while (rs.next()) {
+                count++;
                 StringBuilder row = new StringBuilder("| ");
                 for (String colName : columnNames) {
                     String value = rs.getString(colName);
@@ -115,10 +117,61 @@ public int addRecordAndReturnId(String query, Object... params) {
             System.out.println("-------------------------------------------------------------------------"
                     + "--------------------------------------------------------------------------------------------------------------------"
                     + "---------------------------------------------------------------------------------------------------------------");
+            System.out.println("Inmate Registered: " + count + " Found ");
 
         } catch (SQLException e) {
             System.out.println("Error retrieving records: " + e.getMessage());
         }
+        return count;
+    }
+     
+     public int viewRecords(String sqlQuery, String[] columnHeaders, String[] columnNames) {
+         int count = 0;
+        // Check that columnHeaders and columnNames arrays are the same length
+        if (columnHeaders.length != columnNames.length) {
+            System.out.println("Error: Mismatch between column headers and column names.");
+            return 0;
+        }
+
+        try (Connection conn = this.connectDB();
+             PreparedStatement pstmt = conn.prepareStatement(sqlQuery);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            // Print the headers dynamically
+            StringBuilder headerLine = new StringBuilder();
+            headerLine.append("-------------------------------------------------"
+                    + "--------------------------------------------------------------------------------------------------------------------"
+                    + "--------------------------------------------------------------------------------------------------------------------"
+                    + "-------------------\n| ");
+            for (String header : columnHeaders) {
+                headerLine.append(String.format("%-20s | ", header)); // Adjust formatting as needed
+            }
+            headerLine.append("\n--------------------------------------------------------------------------"
+                    + "--------------------------------------------------------------------------------------------------------------------"
+                    + "--------------------------------------------------------------------------------------------------------"
+                    + "------");
+
+            System.out.println(headerLine.toString());
+
+            // Print the rows dynamically based on the provided column names
+            while (rs.next()) {
+                count++;
+                StringBuilder row = new StringBuilder("| ");
+                for (String colName : columnNames) {
+                    String value = rs.getString(colName);
+                    row.append(String.format("%-20s | ", value != null ? value : "")); // Adjust formatting
+                }
+                System.out.println(row.toString());
+            }
+            System.out.println("-------------------------------------------------------------------------"
+                    + "--------------------------------------------------------------------------------------------------------------------"
+                    + "---------------------------------------------------------------------------------------------------------------");
+            System.out.println("Inmate Record: " + count + " Found ");
+
+        } catch (SQLException e) {
+            System.out.println("Error retrieving records: " + e.getMessage());
+        }
+        return count;
     }
     
     // Add this method in the config class

@@ -43,7 +43,8 @@ public class La {
                     
                     break;
                 case 2:
-                    System.out.println("Logging Out: ");
+                    System.out.println("Logging Out. . .  ");
+                    Session.endSession();
                     run = false;
                    break;
                 default:
