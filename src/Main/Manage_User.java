@@ -174,8 +174,8 @@ public class Manage_User {
                 System.out.println("Invalid Status: ");
         }
         
-        String sql = "INSERT INTO users(u_name, u_pass, u_position, u_badge, u_approval) VALUES (?,?,?,?,?)";
-        config.addRecordAndReturnId(sql, name, hashPass, ps, badge, stat);
+        String sql = "INSERT INTO users(u_name, u_pass, u_position, u_badge, u_approval, date_added) VALUES (?,?,?,?,?,?)";
+        config.addRecordAndReturnId(sql, name, hashPass, ps, badge, stat, Validations.Date());
         
         sql = "INSERT INTO admin(user_name, user_true_pass, user_badge ) VALUES (?,?,?)";
         int get = config.addRecordAndReturnId(sql, name, pass, badge);

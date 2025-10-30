@@ -4,7 +4,6 @@ package Main;
 import java.util.*;
 import Config.conf;
 import Config.Validations;
-import java.time.LocalDate;
 
 public class Main {
     public static void main(String[] args) {
@@ -63,11 +62,11 @@ public class Main {
         
     }
     
-    public static void AddInmate(){
+    public static int AddInmate(){
         
         Scanner sc = new Scanner(System.in);
         conf config = new conf();
-        int impri = 0, add = 0;
+        int impri = 0, add = 0, rec_quan = 0;
         
         System.out.println("\n ----- Register Inmate -----");
         
@@ -148,13 +147,16 @@ public class Main {
 
             String date = Validations.Date();
             
+            if(!stat.equals("Cancelled")){
             System.out.print(" ----- Inmate Record ----- ");
             System.out.print("\nEnter Record Quantity: ");
-            int rec_quan = sc.nextInt();
+            rec_quan = sc.nextInt();
+            
+            }
 
             String sql = "INSERT INTO inmate(u_id, i_name, i_age, i_gender, i_nationality, i_impri, i_stat, i_record_quan, i_type, i_apprehended,"
                     + " i_date_register, i_infoStatus) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
-            int inmate = config.addRecordAndReturnId(sql, Session.getUserId(), name, age, sex, nation, 0, stat, rec_quan, in_type, appre, date, "Imprisoned");
+            int inmate = config.addRecordAndReturnId(sql, Session.getUserId(), name, age, sex, nation, 0, stat, rec_quan, in_type, appre, date, "Active");
 
             sql = "INSERT INTO logs(h_name, h_date, h_context, i_id, u_id) VALUES(?,?,?,?,?)";
             int history = config.addRecordAndReturnId(sql, name, date, "Added Inmate", inmate, Session.getUserId());
@@ -164,8 +166,13 @@ public class Main {
 
                 int x;
                 
-            if(stat.equals(0)){
+            if(stat.equals("Cancelled")){
                 System.out.println("No Record Inmate Cancelled: ");
+                
+                sql = "UPDATE inmate SET i_infoStatus = ? WHERE i_id = ?";
+                config.updateRecord(sql, "Unactive", inmate);
+                return 0;
+
             } else {
                 for(x = 0; x < rec_quan; x++){
                     System.out.print("\nEnter Record Name " + (x+1) +": ");
@@ -195,6 +202,11 @@ public class Main {
                     sql = "INSERT INTO record(r_name, r_stat, r_conviction_time, i_id, r_date_commited, r_recordStatus) VALUES (?,?,?,?,?,?)";
                     int record = config.addRecordAndReturnId(sql, rec_name, rec_stat, convict, inmate, commited, "Guilty");
                     
+                    if(rec_stat.equals("Case Closed")){
+                        sql = "UPDATE record SET r_recordStatus = ? WHERE r_id = ?";
+                        config.updateRecord(sql, "Unguilty", record);
+                    }
+                    
                     System.out.println("----- Appending Record: -----");
                     System.out.println("Inmate Recorded Succesfully: ");
                     
@@ -202,10 +214,14 @@ public class Main {
                     
                 }
                 
-                sql = "UPDATE inmate SET i_impri = ? WHERE i_id = ?";
-                config.updateRecord(sql, impri, inmate);
+                if(!stat.equals("Cancelled")){
+                    sql = "UPDATE inmate SET i_impri = ? WHERE i_id = ?";
+                    config.updateRecord(sql, impri, inmate);
+                    
+                }
             }
         }
+        return 0;
     }
     
     public static String RecordStatus() {
@@ -284,7 +300,7 @@ public class Main {
         return ans_stat;
     }
     
-    public static void deleteInmateRecord(){
+    public static int deleteInmateRecord(){
         
         System.out.println("\n--- DELETION MENU ---");
         Scanner sc = new Scanner(System.in);
@@ -293,30 +309,35 @@ public class Main {
         System.out.print("Do you want to view Inmate Records?(y-1/n-0): ");
         int ans = sc.nextInt();
         
-        System.out.println("Enter Current Date:");
-        String c_date = sc.next();        
         if(ans == 1){
             viewInmateInformation();
         }
         
-        System.out.print("Delete Inmate Information: ");
+        System.out.println("\n----- 0 to cancel -----");
+        System.out.print("Enter ID to Delete Inmate: ");
         int iid = sc.nextInt();
         
-        String in_name = "";
-        String sqlQuery = "SELECT i_name FROM inmate WHERE i_id = ?";
-        List<Map<String, Object>> result = dbConfig.fetchRecords(sqlQuery, iid);
-        
-        String deleteInmateInfo;
-        deleteInmateInfo = "DELETE FROM inmate WHERE i_id = ?";
-        dbConfig.deleteRecord(deleteInmateInfo, iid);
-
-        if (!result.isEmpty()) {
-            java.util.Map<String, Object> getname = result.get(0);
-            in_name = getname.get("i_name").toString();
+        if(iid == 0){
+            System.out.println("Cancelling . . .");
+            return 0;
+        } else {
+            String in_name = "";
+            String sqlQuery = "SELECT i_name FROM inmate WHERE i_id = ?";
+            List<Map<String, Object>> result = dbConfig.fetchRecords(sqlQuery, iid);
+            
+            if (!result.isEmpty()) {
+                java.util.Map<String, Object> getname = result.get(0);
+                in_name = getname.get("i_name").toString();
+            }
+            
+            String sql = "INSERT INTO logs(h_name, h_date, h_context, i_id, u_id) VALUES(?,?,?,?,?)";
+            dbConfig.addRecord(sql, in_name, Validations.Date(), "Deleted Inmate", iid, Session.getUserId());
+            
+            String deleteInmateInfo;
+            deleteInmateInfo = "DELETE FROM inmate WHERE i_id = ?";
+            dbConfig.deleteRecord(deleteInmateInfo, iid);
         }
-
-        String sql = "INSERT INTO logs(h_name, h_date, h_context, i_id) VALUES(?,?,?,?)";
-        dbConfig.addRecordAndReturnId(sql, in_name, c_date, "Deleted Inmate", iid);
+        return 0;
     }
     
     public static void viewInmateInformation(){
@@ -662,48 +683,54 @@ public class Main {
         
     }
     
-    public static void AddRecord(int inmateId) {
+    public static int AddRecord(int inmateId) {
         Scanner sc = new Scanner(System.in);
         conf config = new conf();
         String recordName = "";
         int convictionTime = 0;
 
         System.out.println("\n---- Add Record Menu ----");
+        System.out.println("\n----- 0 to cancel -----");
         System.out.print("Record Quantity: ");
         int recordCount = sc.nextInt();
+        
+        if(recordCount == 0){
+            System.out.println("Canceling . . . ");
+            return 0;
+        } else {
+            for (int i = 0; i < recordCount; i++) {
+                System.out.print("\nEnter Record Name: ");
+                recordName = sc.next();
 
-        for (int i = 0; i < recordCount; i++) {
-            System.out.print("\nEnter Record Name: ");
-            recordName = sc.next();
+                String status = RecordStatus();
 
-            String status = RecordStatus();
+                System.out.print("\nConviction Time: ");
+                convictionTime = sc.nextInt();
 
-            System.out.print("\nConviction Time: ");
-            convictionTime = sc.nextInt();
+                String sql = "INSERT INTO record(r_name, r_stat, r_conviction_time, r_date_commited, r_recordStatus, i_id) VALUES (?,?,?,?,?,?)";
 
-            String sql = "INSERT INTO record(r_name, r_stat, r_conviction_time, r_date_commited, r_recordStatus, i_id) VALUES (?,?,?,?,?,?)";
+                String recordVerdict = "Case Closed".equals(status) ? "Not Guilty" : "Guilty";
+                config.addRecordAndReturnId(sql, recordName, status, convictionTime, Validations.Date(), recordVerdict, inmateId);
+            }
 
-            String recordVerdict = "Case Closed".equals(status) ? "Guilty" : "Not Guilty";
-            config.addRecordAndReturnId(sql, recordName, status, convictionTime, Validations.Date(), recordVerdict, inmateId);
+            String getQtySql = "SELECT i_record_quan FROM inmate WHERE i_id = ?";
+            Object singleData = config.getSingleData(getQtySql, inmateId);
+            int recordQty = ((Number) singleData).intValue();
+            int newQty = recordQty + recordCount;
+            String updateSql = "UPDATE inmate SET i_record_quan = ? WHERE i_id = ?";
+            config.updateRecord(updateSql, newQty, inmateId);
+
+            getQtySql = "SELECT i_impri FROM inmate WHERE i_id = ?";
+            Object singleData2 = config.getSingleData(getQtySql, inmateId);
+            int recimpri = ((Number) singleData2).intValue();
+            int newimpri = recimpri + convictionTime;
+            updateSql = "UPDATE inmate SET i_impri = ? WHERE i_id = ?";
+            config.updateRecord(updateSql, newimpri, inmateId);
+
+            String sql = "INSERT INTO logs(i_id, u_id, h_name, h_context, h_date) VALUES (?,?,?,?,?)";
+            config.addRecordAndReturnId(sql, inmateId, Session.getUserId(), recordName, "Added Record", Validations.Date());
         }
-
-        String getQtySql = "SELECT i_record_quan FROM inmate WHERE i_id = ?";
-        Object singleData = config.getSingleData(getQtySql, inmateId);
-        int recordQty = ((Number) singleData).intValue();
-        int newQty = recordQty + recordCount;
-        String updateSql = "UPDATE inmate SET i_record_quan = ? WHERE i_id = ?";
-        config.updateRecord(updateSql, newQty, inmateId);
-        
-        getQtySql = "SELECT i_impri FROM inmate WHERE i_id = ?";
-        Object singleData2 = config.getSingleData(getQtySql, inmateId);
-        int recimpri = ((Number) singleData2).intValue();
-        int newimpri = recimpri + convictionTime;
-        updateSql = "UPDATE inmate SET i_impri = ? WHERE i_id = ?";
-        config.updateRecord(updateSql, newimpri, inmateId);
-        
-        String sql = "INSERT INTO logs(i_id, u_id, h_name, h_context, h_date) VALUES (?,?,?,?,?)";
-        config.addRecordAndReturnId(sql, inmateId, Session.getUserId(), recordName, "Added Record", Validations.Date());
-
+        return 0;
     }
     
     public static void RemoveRecord(int iid){
@@ -741,6 +768,16 @@ public class Main {
 
             sql = "INSERT INTO logs(i_id, u_id, h_name, h_context, h_date) VALUES (?,?,?,?,?)";
             config.addRecordAndReturnId(sql, iid, Session.getUserId(), inmateName, "Delete Record", Validations.Date());
+            
+            sql = "SELECT i_record_quan FROM inmate WHERE i_id = ?";
+            java.util.List<java.util.Map<String, Object>> record_quan = config.fetchRecords(sql, iid);
+            java.util.Map<String, Object> rec = record_quan.get(0);
+            int rec_quan = ((Number) rec.get("i_record_quan")).intValue();
+            
+            if(rec_quan == 0){
+                sql = "UPDATE inmate SET i_infoStatus = ? WHERE i_id = ?";
+                config.updateRecord(sql, "Unactive", iid);
+                }
             }
         }
     }

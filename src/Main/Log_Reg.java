@@ -8,24 +8,43 @@ import java.time.*;
 
 public class Log_Reg {
     
-    public static void Register(){
+    public static int Register(){
         Scanner sc = new Scanner(System.in);
         conf config = new conf();
         int sec_code = 123456;
         String log_role = "";
         
-        System.out.println("\n ----- Register Menu -----");
+        System.out.println("\n----- Register Menu -----");
+        System.out.println("------ 0 to cancel ------");
         
         System.out.print("Enter User Name: ");
         String name = sc.next();
+        if(ExitTrigger(name)){
+                return 0;
+            }
 
         System.out.print("Enter Password: ");
-        String pass = sc.next();
+        String password = sc.next();
+        if(ExitTrigger(password)){
+                return 0;
+            }
+        
+        int pass = password.length();
+            
+            while(pass < 4){
+                System.out.print("Password must be 4 characters long: ");
+                password = sc.next();
+                
+                pass = password.length();
+            } 
 
-        String HashPass = config.hashPassword(pass);
+        String HashPass = config.hashPassword(password);
 
         System.out.print("Badge ID: ");
         String badge = sc.next();
+        if(ExitTrigger(badge)){
+                return 0;
+            }
 
         while (true) {
 
@@ -74,13 +93,14 @@ public class Log_Reg {
         int u_id = config.addRecordAndReturnId(sql, name, HashPass, log_role, badge, "Pending", Date());
 
         sql = "INSERT INTO admin(u_id, user_name, user_true_pass, user_badge) VALUES (?,?,?,?)";
-        config.addRecord(sql, u_id, name, pass, badge);
+        config.addRecord(sql, u_id, name, password, badge);
+        return 0;
 
     }
     
     public static int LogIn(){
         
-        String log_role = "";
+        String log_role = "", hashPass = "";
         int flag = 0, pos;
         Scanner sc = new Scanner(System.in);
         conf config = new conf();
@@ -99,11 +119,17 @@ public class Log_Reg {
 
             System.out.print("Enter Password: ");
             String log_pass = sc.next();
+            if(ExitTrigger(log_pass)){
+                return 0;
+            }
 
-            String hashPass = config.hashPassword(log_pass);
+            hashPass = config.hashPassword(log_pass);
 
             System.out.print("Badge ID: ");
             String log_badge = sc.next();
+            if(ExitTrigger(log_badge)){
+                return 0;
+            }
 
                 String qry = "SELECT * FROM users WHERE u_name = ? AND u_pass = ? AND u_badge = ?";
                 java.util.List<java.util.Map<String, Object>> result = config.fetchRecords(qry, log_name, hashPass, log_badge);
