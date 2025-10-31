@@ -77,7 +77,7 @@ public class Main {
         for(r = 0; r < count; r++){
         
             System.out.print("\nEnter Inmate Name " + (r + 1) +": ");
-            String name = sc.next();
+            String name = Validations.StringValidation();
 
             System.out.print("Enter Inmate Age: ");
             int age = Validations.AgeValidations(17);
@@ -102,7 +102,7 @@ public class Main {
             }
 
             System.out.print("\nEnter Inmate Nationality: ");
-            String nation = sc.next();
+            String nation = Validations.StringValidation();
 
             System.out.println("");
             System.out.print("\n ----- Status Options ----- \n");
@@ -134,16 +134,16 @@ public class Main {
                 
             System.out.println(" ----- Date Apprehended ----- ");
             System.out.print("\nYear: ");
-            String year = sc.next();
+            Object year = Validations.IntegerValidation();
 
             System.out.print("Month: ");
-            String month = sc.next();
+            Object month = Validations.IntegerValidation();
 
             System.out.print("Day: ");
-            String day = sc.next();
+            Object day = Validations.IntegerValidation();
             System.out.println("\n ======================== \n");
             sc.nextLine();
-            String appre = year + "-" + month + "-" + day;
+            String appre = (String) year + "-" + (String) month + "-" + (String) day;
 
             String date = Validations.Date();
             
@@ -176,28 +176,28 @@ public class Main {
             } else {
                 for(x = 0; x < rec_quan; x++){
                     System.out.print("\nEnter Record Name " + (x+1) +": ");
-                    String rec_name = sc.next();
+                    String rec_name = Validations.StringValidation();
 
                     System.out.println("\n ----- Record Status ----- ");
                     String rec_stat = RecordStatus();
                     System.out.println(" ====================== ");
 
                     System.out.print("Conviction Time: ");
-                    int convict = sc.nextInt();
+                    int convict = Validations.IntegerValidation();
 
                     System.out.println("\n ----- Commited Date ----- ");
                     System.out.print("Year: ");
-                    year = sc.next();
+                    year = Validations.IntegerValidation();
                     
                     System.out.print("Month: ");
-                    month = sc.next();
+                    month = Validations.IntegerValidation();
                     
                     System.out.print("Day: ");
-                    day = sc.next();
+                    day = Validations.IntegerValidation();
                     
                     System.out.println(" ======================== ");
                     
-                    String commited = year + "-" + month + "-" + day;
+                    String commited = (String) year + "-" + (String) month + "-" + (String) day;
 
                     sql = "INSERT INTO record(r_name, r_stat, r_conviction_time, i_id, r_date_commited, r_recordStatus) VALUES (?,?,?,?,?,?)";
                     int record = config.addRecordAndReturnId(sql, rec_name, rec_stat, convict, inmate, commited, "Guilty");

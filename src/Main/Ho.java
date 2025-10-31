@@ -2,12 +2,8 @@
 package Main;
 
 import Config.Validations;
-import static Main.Main.AddInmate;
+import static Main.Main.*;
 import static Main.Manage_User.ManageUsers;
-import static Main.Main.UpdateInmate;
-import static Main.Main.deleteInmateRecord;
-import static Main.Main.viewInmateInformation;
-import static Main.Main.viewInmateRecord;
 import java.util.Scanner;
 
 public class Ho {
@@ -45,7 +41,7 @@ public class Ho {
                     if(ans2 == 1){
                         
                         System.out.println("Enter Inmate ID: ");
-                        int id = sc.nextInt();
+                        int id = Validations.IntegerValidation();
                         viewInmateRecord(id);
                         
                     }

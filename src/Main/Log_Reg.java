@@ -18,7 +18,7 @@ public class Log_Reg {
         System.out.println("------ 0 to cancel ------");
         
         System.out.print("Enter User Name: ");
-        String name = sc.next();
+        String name = Validations.StringValidation();
         if(ExitTrigger(name)){
                 return 0;
             }
@@ -41,10 +41,11 @@ public class Log_Reg {
         String HashPass = config.hashPassword(password);
 
         System.out.print("Badge ID: ");
-        String badge = sc.next();
-        if(ExitTrigger(badge)){
+        int badge = Validations.IntegerValidation();
+        int exit = badge;
+        if(ExitTrigger(exit)){
                 return 0;
-            }
+        }
 
         while (true) {
 
@@ -55,7 +56,12 @@ public class Log_Reg {
                 break;
             } else {
                 System.out.print("Badge Number already exists, Enter Again: ");
-                badge = sc.next();
+                badge = Validations.IntegerValidation();
+                
+                exit = badge;
+                if(ExitTrigger(exit)){
+                        return 0;
+                }
             }
         }
 
@@ -112,7 +118,7 @@ public class Log_Reg {
         
         do{
             System.out.print("Enter User Name: ");
-            String log_name = sc.next();
+            String log_name = Validations.StringValidation();
             if(ExitTrigger(log_name)){
                 return 0;
             }
@@ -126,7 +132,7 @@ public class Log_Reg {
             hashPass = config.hashPassword(log_pass);
 
             System.out.print("Badge ID: ");
-            String log_badge = sc.next();
+            int log_badge = Validations.IntegerValidation();
             if(ExitTrigger(log_badge)){
                 return 0;
             }

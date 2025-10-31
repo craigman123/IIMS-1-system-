@@ -2,8 +2,7 @@
 package Main;
 
 import Config.Validations;
-import static Main.Main.viewInmateInformation;
-import static Main.Main.viewInmateRecord;
+import static Main.Main.*;
 import java.util.Scanner;
 
 public class La {
@@ -35,7 +34,7 @@ public class La {
                     viewInmateInformation(); 
                     
                     System.out.println("Enter Inmate ID: ");
-                    int id = sc.nextInt();
+                    int id = Validations.IntegerValidation();
                     
                     if(ans2 == 1){
                         viewInmateRecord(id);
