@@ -2,15 +2,18 @@
 package Main;
 
 import Config.Validations;
+import Config.conf;
 import static Main.Main.*;
 import static Main.Manage_User.ManageUsers;
 import java.util.Scanner;
+import static Main.UniversalDataDisplay.*;
 
 public class Ho {
     
-    public void Higher(){
+    public int Higher(){
         Scanner sc = new Scanner(System.in);
         boolean run = true;
+        conf config = new conf();
         while (run) {
 
             System.out.println("\n--- HIGHER MENU ---");
@@ -42,6 +45,25 @@ public class Ho {
                         
                         System.out.println("Enter Inmate ID: ");
                         int id = Validations.IntegerValidation();
+                        
+                        while(true){
+                        if(Validations.ExitTrigger(id)){
+                            return 0;
+                        }
+
+                        String qry = "SELECT * FROM record WHERE r_id = ?";
+                        java.util.List<java.util.Map<String, Object>> result = config.fetchRecords(qry, id);
+
+                        if (result.isEmpty()) {
+                                System.out.println("\n ----- ID NOT FOUND ----- ");
+                                System.out.print("Enter Again: ");
+                                id = Validations.IntegerValidation();
+
+                        }else{
+                            break;
+                            }
+                        }  
+                        
                         viewInmateRecord(id);
                         
                     }
@@ -59,5 +81,6 @@ public class Ho {
                     System.out.println("Invalid Choice!");
                 }
             }
+        return 0;
     }
 }

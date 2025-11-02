@@ -280,30 +280,29 @@ public int addRecordAndReturnId(String query, Object... params) {
     } catch (java.security.NoSuchAlgorithmException e) {
         System.out.println("Error hashing password: " + e.getMessage());
         return null;
+        }
     }
-}
     
-public Object getSingleData(String sql, Object... params) {
-    Object result = null;
+    public Object getSingleData(String sql, Object... params) {
+        Object result = null;
 
-    try (Connection conn = this.connectDB();
-         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = this.connectDB();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-        for (int i = 0; i < params.length; i++) {
-            pstmt.setObject(i + 1, params[i]);
+            for (int i = 0; i < params.length; i++) {
+                pstmt.setObject(i + 1, params[i]);
+            }
+
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                result = rs.getObject(1);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error fetching single data: " + e.getMessage());
         }
 
-        ResultSet rs = pstmt.executeQuery();
-
-        if (rs.next()) {
-            result = rs.getObject(1);
-        }
-
-    } catch (SQLException e) {
-        System.out.println("Error fetching single data: " + e.getMessage());
+        return result;
     }
-
-    return result;
-}
-
 }

@@ -42,10 +42,9 @@ public class Log_Reg {
 
         System.out.print("Badge ID: ");
         int badge = Validations.IntegerValidation();
-        int exit = badge;
-        if(ExitTrigger(exit)){
+        if(ExitTrigger(badge)){
                 return 0;
-        }
+            }
 
         while (true) {
 
@@ -58,9 +57,8 @@ public class Log_Reg {
                 System.out.print("Badge Number already exists, Enter Again: ");
                 badge = Validations.IntegerValidation();
                 
-                exit = badge;
-                if(ExitTrigger(exit)){
-                        return 0;
+                if(badge == 0){
+                return 0;
                 }
             }
         }
@@ -203,11 +201,19 @@ public class Log_Reg {
         return date;
     }
     
-   public static boolean ExitTrigger(Object num) {
-    if (num != null && num.equals("0")) {
-        System.out.println("Returning to main menu...");
-        return true;
+    private static boolean ExitTrigger(Object num) {
+        if (num == null) return false;
+
+        if (num instanceof Integer && ((Integer) num) == 0) {
+            System.out.println("Returning to main menu...");
+            return true;
         }
-    return false; 
+
+        if (num instanceof String && num.equals("0")) {
+            System.out.println("Returning to main menu...");
+            return true;
+        }
+
+        return false;
     }
 }

@@ -16,11 +16,16 @@ public class Validations {
             
             try {
                 age = Integer.parseInt(input);
-                
-                if (age > legal) {
+                if(age == 0){
                     valid = true;
-                } else {
-                    System.out.println("Invalid age: the individual is a juvenile and does not meet the minimum legal requirement of " + legal + " years.");
+                }
+                
+                if(age != 0){
+                    if (age > legal) {
+                        valid = true;
+                    } else {
+                        System.out.println("Invalid age: the individual is a juvenile and does not meet the minimum legal requirement of " + legal + " years.");
+                    }
                 }
             } catch (NumberFormatException e) {
                 System.out.println("Invalid input! Please enter a valid integer for age: ");
@@ -40,10 +45,17 @@ public class Validations {
             
             try {
                 ans = Integer.parseInt(input);
-                if (ans >= first && ans <= last) {
+                
+                if(ans == 0){
                     valid = true;
-                } else {
-                    System.out.print("Invalid Choice: Enter Again (between " + first + " and " + last + "): ");
+                }
+                
+                if(ans != 0){
+                    if (ans >= first && ans <= last) {
+                        valid = true;
+                    } else {
+                        System.out.print("Invalid Choice: Enter Again (between " + first + " and " + last + "): ");
+                    }
                 }
             } catch (NumberFormatException e) {
                 System.out.print("That's not a valid integer! Please Enter Again: ");
@@ -101,5 +113,21 @@ public class Validations {
             }
         }
         return userInput;
+    }
+    
+    public static boolean ExitTrigger(Object num) {
+        if (num == null) return false;
+
+        if (num instanceof Integer && ((Integer) num) == 0) {
+            System.out.println("Returning to main menu...");
+            return true;
+        }
+
+        if (num instanceof String && num.equals("0")) {
+            System.out.println("Returning to main menu...");
+            return true;
+        }
+
+        return false;
     }
 }
