@@ -157,6 +157,13 @@ public class Log_Reg {
                             System.out.println("Account Disabled: Contact Admin");
                             return 0;
                             
+                        case "Admin":
+                            System.out.println("Logged as Admin: Redirecting . . .");
+                            ad admin = new ad();
+                            Session.AdminSession(id);
+                            admin.adminPanel();
+                            break;
+                            
                         default:
                             System.out.println("LOGIN SUCCESS!");
                             flag = 0;

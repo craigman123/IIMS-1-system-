@@ -11,6 +11,8 @@ public class Main {
     
         Scanner sc = new Scanner(System.in);
         Log_Reg lgreg = new Log_Reg();
+        
+       GenerateAdminACC.CheckAdmin();
                 
         while(true){
         System.out.println(" ----- Welcome to the System: ----- ");
@@ -49,18 +51,10 @@ public class Main {
                 System.out.print("\nChoice: ");
                 ans = Validations.ChoiceValidation(1,2);
             }while(ans == 1);
+            
+            System.out.println("Terminating System: . . . ");
+            break;
         }
-    }
-    
-    public static void viewUserRecord(){
-        
-        conf config = new conf();
-        
-        String sqlQuery = "SELECT u_id, u_name, u_pass, u_position, u_badge FROM users";
-        String[] headers = {"ID", "Username", "Password", "Position", "Badge"};
-        String[] cols = {"u_id", "u_name", "u_pass", "u_position", "u_badge"};
-        config.viewRecords(sqlQuery, headers, cols);
-        
     }
     
     public static int AddInmate(){
@@ -357,7 +351,7 @@ public class Main {
         int ans = Validations.ChoiceValidation(1, 2);
         
         if(ans == 1){
-            viewInmateInformation();
+            ShowInmateData();
         }
         
         System.out.println("\n----- 0 to cancel -----");
@@ -452,7 +446,7 @@ public class Main {
                 run = false;
                 }
             }
-            viewInmateRecord(iid);
+            ShowRecordData(iid);
         }
     }
 
@@ -995,8 +989,8 @@ public class Main {
                     in_name = getname.get("i_name").toString();
                 }
 
-                sql = "INSERT INTO logs(h_name, h_date, h_context, i_id) VALUES(?,?,?,?)";
-                config.addRecordAndReturnId(sql, in_name, date, context, id);
+                sql = "INSERT INTO logs(h_name, u_id, h_date, h_context, i_id) VALUES(?,?,?,?,?)";
+                config.addRecordAndReturnId(sql, in_name, Session.getUserId(), date, context, id);
             }
     }
     

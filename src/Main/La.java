@@ -16,14 +16,11 @@ public class La {
 
             System.out.println("\n--- AUTHORITIES MENU ---");
             System.out.println("1: View Record");
-            System.out.println("2: Log Out");
+            System.out.println("2: Search");
+            System.out.println("3: Log Out");
             System.out.print("Enter Choice: ");
 
-            int choice = sc.nextInt();
-            while(choice < 1 || choice > 2){
-                System.out.println("Invalid Choice: ");
-                choice = Validations.ChoiceValidation(1,2);
-            }
+            int choice = Validations.ChoiceValidation(1, 3);
             
             switch (choice) {
                 case 1: 
@@ -34,7 +31,7 @@ public class La {
                     System.out.print("Choice: ");
                     int ans2 = Validations.ChoiceValidation(1,2);
                     
-                    viewInmateInformation(); 
+                    ShowInmateData(); 
                     
                     System.out.println("Enter Inmate ID: ");
                     int id = Validations.IntegerValidation();
@@ -47,7 +44,7 @@ public class La {
                     String qry = "SELECT * FROM record WHERE r_id = ?";
                     java.util.List<java.util.Map<String, Object>> result = config.fetchRecords(qry, id);
 
-                    if (result.isEmpty()) {
+                    if (!result.isEmpty()) {
                             System.out.println("\n ----- ID NOT FOUND ----- ");
                             System.out.print("Enter Again: ");
                             id = Validations.IntegerValidation();
@@ -63,6 +60,10 @@ public class La {
                     
                     break;
                 case 2:
+                    Search.SearchPanel(3);
+                    break;
+                    
+                case 3:
                     System.out.println("Logging Out. . .  ");
                     Session.endSession();
                     run = false;

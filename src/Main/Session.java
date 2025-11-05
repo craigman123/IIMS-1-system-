@@ -30,16 +30,16 @@ public class Session {
     }
 
     public static int Session(int id) {
+        conf config = new conf();
         
         boolean run = true;
         userId = id;
         active = true;
         loginTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-
+        
         System.out.println("\nSession started for user ID: " + userId);
         System.out.println("Login Time: " + loginTime);
 
-        conf config = new conf();
         String sql = "INSERT INTO session_logs (u_id, login, s_badge) VALUES (?,?,?)";
         
         while(run){
@@ -67,7 +67,15 @@ public class Session {
             System.out.println("No active session to end: ");
         }
     }
+    
+    public static int AdminSession(int id) {
+        userId = id;
+
+
+        return userId;
+    }
 
     public static int getUserId() { 
         return userId; }
 }
+

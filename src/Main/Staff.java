@@ -19,13 +19,14 @@ public class Staff {
             System.out.println("1: Add Inmate");
             System.out.println("2: Update Inmate");
             System.out.println("3: View Record");
-            System.out.println("4: Log Out");
+            System.out.println("4: Search");
+            System.out.println("5: Log Out");
             System.out.print("Enter Choice: ");
 
-            int choice = sc.nextInt();
-            while(choice < 1 || choice > 4){
+            int choice = Validations.ChoiceValidation(1, 5);
+            while(choice < 1 || choice > 5){
                 System.out.print("Invalid Choice: ");
-                choice = Validations.ChoiceValidation(1,4);
+                choice = Validations.ChoiceValidation(1,5);
             }
 
             switch (choice) {
@@ -39,7 +40,7 @@ public class Staff {
                     System.out.print("Choice: ");
                     int ans2 = Validations.ChoiceValidation(1,2);
                     
-                    viewInmateInformation(); 
+                    ShowInmateData(); 
                     
                     System.out.println("Enter Inmate ID: ");
                     int id = Validations.IntegerValidation();
@@ -52,7 +53,7 @@ public class Staff {
                     String qry = "SELECT * FROM record WHERE r_id = ?";
                     java.util.List<java.util.Map<String, Object>> result = config.fetchRecords(qry, id);
 
-                    if (result.isEmpty()) {
+                    if (!result.isEmpty()) {
                             System.out.println("\n ----- ID NOT FOUND ----- ");
                             System.out.print("Enter Again: ");
                             id = Validations.IntegerValidation();
@@ -67,6 +68,9 @@ public class Staff {
                     }  
                     break;
                 case 4:
+                    Search.SearchPanel(4);
+                    break;
+                case 5:
                     System.out.println("Logging out. . . ");
                     Session.endSession();
                     run = false;

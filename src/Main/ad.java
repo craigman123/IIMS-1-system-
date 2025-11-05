@@ -5,18 +5,20 @@ import Config.Validations;
 import Config.conf;
 import static Main.Main.*;
 import static Main.Manage_User.ManageUsers;
+import static Main.UniversalDataDisplay.viewInmateInformation;
+import static Main.UniversalDataDisplay.viewInmateRecord;
 import java.util.Scanner;
-import static Main.UniversalDataDisplay.*;
 
-public class Ho {
+public class ad {
     
-    public int Higher(){
+    private static int admin(){
         Scanner sc = new Scanner(System.in);
         boolean run = true;
         conf config = new conf();
+        
         while (run) {
 
-            System.out.println("\n--- HIGHER MENU ---");
+            System.out.println("\n--- ADMIN MENU ---");
             System.out.println("1: Add Inmate");
             System.out.println("2: Update Inmate");
             System.out.println("3: Delete Inmate");
@@ -40,7 +42,7 @@ public class Ho {
                     System.out.print("\nChoice: ");
                     int ans2 = Validations.ChoiceValidation(1,2);
                     
-                    ShowInmateData(); 
+                    viewInmateInformation(); 
                  
                     if(ans2 == 1){
                         
@@ -65,9 +67,7 @@ public class Ho {
                             }
                         }  
                         
-                        if(ans2 == 1){
                         viewInmateRecord(id);
-                        }
                         
                     }
 
@@ -89,5 +89,9 @@ public class Ho {
                 }
             }
         return 0;
+    }
+    
+    public static void adminPanel(){
+        admin();
     }
 }

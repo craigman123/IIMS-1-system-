@@ -30,7 +30,7 @@ public class Manage_User {
                 break;
             case 3: DelUser();
                 break;
-            case 4: ViewUser();
+            case 4: UniversalDataDisplay.ShowallUser();
                 break;
             case 5: UserAccess();
                 break;
@@ -47,6 +47,8 @@ public class Manage_User {
     public static void UpdateUser(){
         Scanner sc = new Scanner(System.in);
         conf config = new conf();
+        boolean run = true;
+        
         String pos = "", stat = "";
         System.out.println("====== UPDATE USER MENU ======");
         
@@ -57,11 +59,26 @@ public class Manage_User {
         int choice = Validations.ChoiceValidation(1,2);
         
         if(choice == 1){
-            ViewUser();
+            UniversalDataDisplay.ShowallUser();
         }
         
         System.out.print("Enter User ID to alter: ");
         int u_id = sc.nextInt();
+        
+        while(run){
+            
+            String qry = "SELECT * FROM users WHERE u_id = ?";
+            java.util.List<java.util.Map<String, Object>> result = config.fetchRecords(qry, u_id);
+            
+            if (result.isEmpty()) {
+                    System.out.println("\n ----- ID NOT FOUND ----- ");
+                    System.out.print("Enter Again: ");
+                    u_id = Validations.IntegerValidation();
+
+            }else{
+                run = false;
+                }
+            }
         
         System.out.print("Enter User Name: ");
         String name = sc.next();
@@ -188,6 +205,7 @@ public class Manage_User {
     public static void DelUser(){
         Scanner sc = new Scanner(System.in);
         conf config = new conf();
+        boolean run = true;
         System.out.println("==== REMOVE USER MENU ====");
         
         System.out.println("Do you want to view User Records?");
@@ -197,11 +215,26 @@ public class Manage_User {
         int choice = Validations.ChoiceValidation(1,2);
         
         if(choice == 1){
-            ViewUser();
+            UniversalDataDisplay.ShowallUser();
         }
         
         System.out.print("Enter User ID to Remove: ");
         int u_id = sc.nextInt();
+        
+        while(run){
+            
+            String qry = "SELECT * FROM users WHERE u_id = ?";
+            java.util.List<java.util.Map<String, Object>> result = config.fetchRecords(qry, u_id);
+            
+            if (result.isEmpty()) {
+                    System.out.println("\n ----- ID NOT FOUND ----- ");
+                    System.out.print("Enter Again: ");
+                    u_id = Validations.IntegerValidation();
+
+            }else{
+                run = false;
+                }
+            }
         
         String deleteInmateInfo = "DELETE FROM users WHERE u_id = ?";
         config.deleteRecord(deleteInmateInfo, u_id);
@@ -211,24 +244,12 @@ public class Manage_User {
         
     }
     
-    public static void ViewUser(){
-        System.out.println("\n--- VIEWING USER MENU ---");
-        conf config = new conf();
-        
-        String sqlQuery = "SELECT u_id, u_name, u_pass, u_position, u_badge, u_approval FROM users";
-        
-        String[] headers = {"ID", "User Name", "Password", "Position", "Badge Number", "Status"};
-        
-        String[] cols = {"u_id", "u_name", "u_pass", "u_position", "u_badge", "u_approval"};
-        
-        config.viewRecords(sqlQuery, headers, cols);
-    }
-    
     public static void UserAccess(){
         
         conf config = new conf();
         Scanner sc = new Scanner(System.in);
         String stat = "";
+        boolean run = true;
         System.out.println("==== APPROVAL MENU ====");
         
         System.out.println("Do you want to view User Records?");
@@ -249,7 +270,22 @@ public class Manage_User {
         }
         
         System.out.print("Enter ID to Validate System Access: ");
-        int id = sc.nextInt();
+        int id = Validations.IntegerValidation();
+        
+        while(run){
+            
+            String qry = "SELECT * FROM users WHERE u_id = ?";
+            java.util.List<java.util.Map<String, Object>> result = config.fetchRecords(qry, id);
+            
+            if (result.isEmpty()) {
+                    System.out.println("\n ----- ID NOT FOUND ----- ");
+                    System.out.print("Enter Again: ");
+                    id = Validations.IntegerValidation();
+
+            }else{
+                run = false;
+                }
+            }
         
         System.out.println("Enter Status: ");
         System.out.println("1: Approved");

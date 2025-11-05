@@ -25,6 +25,7 @@ public class Validations {
                         valid = true;
                     } else {
                         System.out.println("Invalid age: the individual is a juvenile and does not meet the minimum legal requirement of " + legal + " years.");
+                        System.out.print("\nEnter Again: ");
                     }
                 }
             } catch (NumberFormatException e) {
