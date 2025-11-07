@@ -41,10 +41,11 @@ public class Search {
                     UniversalDataDisplay.SearchInmateData();
                     break;
                 case 2:
+                    System.out.println("2: " + Only[3]);
                     SearchType();
                     break;  
                 case 3:
-                    System.out.println("→ " + Only[7]);
+                    System.out.println("→ " + Only[6]);
                     System.out.println("Exiting . . .");
                     swift = false;
                     return 0;
@@ -81,7 +82,7 @@ public class Search {
                     break;
                 case 5:
                     System.out.println("→ " + Only[4]);
-                    System.out.println("Do you want to show Inmate(y-1||n-2):");
+                    System.out.println("Do you want to show Records(y-1||n-2):");
                     System.out.print("Choice: ");
                     int ans = Validations.ChoiceValidation(1, 2);
                     
@@ -163,7 +164,7 @@ public class Search {
                     break;
                 case 4:
                     System.out.println("→ " + Only[4]);
-                    System.out.println("Do you want to show Inmate(y-1||n-2):");
+                    System.out.println("Do you want to show Records(y-1||n-2):");
                     System.out.print("Choice: ");
                     int ans = Validations.ChoiceValidation(1, 2);
                     

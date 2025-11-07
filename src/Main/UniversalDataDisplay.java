@@ -144,6 +144,75 @@ public class UniversalDataDisplay {
             case 2: searchValue = "Unactive"; break;
         }
         
+    }else if(choice == 7){
+        System.out.println("----- Date Apprehended -----");
+            System.out.print("\nYear: ");
+            Object year = Validations.IntegerValidation();
+
+            System.out.print("Month: ");
+            Object month = Validations.IntegerValidation();
+
+            System.out.print("Day: ");
+            Object day = Validations.IntegerValidation();
+
+            System.out.println("\n========================\n");
+            sc.nextLine();
+
+            searchValue = String.format("%04d-%02d-%02d", (int) year, (int) month, (int) day);
+            
+    }else if(choice == 8){
+        System.out.println("----- Date Registered -----");
+            System.out.print("\nYear: ");
+            Object year = Validations.IntegerValidation();
+
+            System.out.print("Month: ");
+            Object month = Validations.IntegerValidation();
+
+            System.out.print("Day: ");
+            Object day = Validations.IntegerValidation();
+
+            System.out.println("\n========================\n");
+            sc.nextLine();
+
+            searchValue = String.format("%04d-%02d-%02d", (int) year, (int) month, (int) day);
+            
+    }else if(choice == 5){
+        
+        System.out.println("\n----- Inmate Status Menu -----");
+        System.out.println("0: Cancel");
+        System.out.println("1: Pending Admission");
+        System.out.println("2: Admitted");
+        System.out.println("3: Under Investigation");
+        System.out.println("4: Awaiting Trial");
+        System.out.println("5: Convicted");
+        System.out.println("6: Parole Granted");
+        System.out.println("7: On Probation");
+        System.out.println("8: Transferred");
+        System.out.println("9: Released");
+        System.out.println("10: Deceased");
+        int ans = Validations.ChoiceValidation(0, 10);
+
+        String ans_stat = "";
+        switch (ans) {
+            case 0: ans_stat = "Cancelled"; break;
+            case 1: ans_stat = "Pending Admission"; break;
+            case 2: ans_stat = "Admitted"; break;
+            case 3: ans_stat = "Under Investigation"; break;
+            case 4: ans_stat = "Awaiting Trial"; break;
+            case 5: ans_stat = "Convicted"; break;
+            case 6: ans_stat = "Parole Granted"; break;
+            case 7: ans_stat = "On Probation"; break;
+            case 8: ans_stat = "Transferred"; break;
+            case 9: ans_stat = "Released"; break;
+            case 10: ans_stat = "Deceased"; break;
+            default:
+                ans_stat = "Unknown";
+                System.out.println("Invalid Choice. Please try again.");
+                break;
+        }
+        
+        searchValue = ans_stat;
+        
     }else{
         System.out.print("Enter search value: ");
         searchValue = sc.nextLine().trim();

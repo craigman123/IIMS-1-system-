@@ -40,7 +40,12 @@ public class ad {
                     System.out.println("1: YES");
                     System.out.print("2: NO");
                     System.out.print("\nChoice: ");
-                    int ans2 = Validations.ChoiceValidation(1,2);
+                    int ans2 = Validations.IntegerValidation();
+                    
+                      while(ans2 < 1 || ans2 > 2){
+                        System.out.println("Invalid Choice: Enter Again: ");
+                        ans2 = Validations.IntegerValidation();
+                }
                     
                     viewInmateInformation(); 
                  
@@ -54,10 +59,10 @@ public class ad {
                             return 0;
                         }
 
-                        String qry = "SELECT * FROM record WHERE r_id = ?";
+                        String qry = "SELECT * FROM record WHERE i_id = ?";
                         java.util.List<java.util.Map<String, Object>> result = config.fetchRecords(qry, id);
 
-                        if (!result.isEmpty()) {
+                        if (result.isEmpty()) {
                                 System.out.println("\n ----- ID NOT FOUND ----- ");
                                 System.out.print("Enter Again: ");
                                 id = Validations.IntegerValidation();

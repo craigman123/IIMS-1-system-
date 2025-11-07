@@ -434,7 +434,7 @@ public class Main {
                 return 0;
             }
             
-            String qry = "SELECT * FROM inmate WHERE i_id = ?";
+            String qry = "SELECT i_id FROM inmate WHERE i_id = ?";
             java.util.List<java.util.Map<String, Object>> result = config.fetchRecords(qry, iid);
             
             if (result.isEmpty()) {
@@ -681,7 +681,7 @@ public class Main {
                             return 0;
                         }
 
-                        String qry = "SELECT * FROM inmate WHERE i_id = ?";
+                        String qry = "SELECT r_id FROM record WHERE r_id = ?";
                         java.util.List<java.util.Map<String, Object>> result = config.fetchRecords(qry, rec_id);
 
                         if (result.isEmpty()) {
@@ -777,8 +777,8 @@ public class Main {
                             break;
                         case 5: 
                             System.out.println("Select Info Status:");
-                            System.out.println("1: Active Record");
-                            System.out.println("2: Closed Record");
+                            System.out.println("1: Guilty");
+                            System.out.println("2: Not Guilty");
                             System.out.print("Choice: ");
                             int infoChoice = Validations.ChoiceValidation(1, 2);
                             if(ExitTrigger(infoChoice)){
@@ -787,13 +787,28 @@ public class Main {
 
                             stat = "";
                             switch(infoChoice){
-                                case 1: stat = "Active Record";
+                                case 1: stat = "Guilty";
                                     break;
-                                case 2: stat = "Closed Record";
+                                case 2: stat = "Not Guilty";
                                     break;
                             }
                             String sqlUpdateInfo = "UPDATE record SET r_recordStatus = ? WHERE r_id = ?";
                             config.updateRecord(sqlUpdateInfo, stat, rec_id);
+                            
+                            if(infoChoice == 2){
+                                sql = "SELECT * FROM inmate WHERE i_id = ?";
+                                java.util.List<java.util.Map<String, Object>> getValue = config.fetchRecords(sql, iid);
+
+                                if(!getValue.isEmpty()){
+                                    java.util.Map<String, Object> user = getValue.get(0);
+                                    int quantity = ((Number) user.get("i_record_quan")).intValue();
+
+                                    if(quantity == 1){
+                                        String qry = "UPDATE inmate SET i_infoStatus = ? WHERE i_id = ?";
+                                        config.updateRecord(qry, "Unactive", iid);
+                                    }
+                                }
+                            }
                             flag = 1;
                             alt_num = 15;
                             break;
@@ -880,6 +895,8 @@ public class Main {
 
             String sql = "INSERT INTO logs(i_id, u_id, h_name, h_context, h_date) VALUES (?,?,?,?,?)";
             config.addRecordAndReturnId(sql, inmateId, Session.getUserId(), recordName, "Added Record", Validations.Date());
+            
+            
         }
         return 0;
     }
@@ -909,7 +926,7 @@ public class Main {
             String qry = "SELECT * FROM record WHERE r_id = ?";
             java.util.List<java.util.Map<String, Object>> result = config.fetchRecords(qry, rec_id);
             
-            if (result.isEmpty()) {
+            if (!result.isEmpty()) {
                     System.out.println("\n ----- ID NOT FOUND ----- ");
                     System.out.print("Enter Again: ");
                     rec_id = Validations.IntegerValidation();
