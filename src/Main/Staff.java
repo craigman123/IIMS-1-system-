@@ -38,9 +38,14 @@ public class Staff {
                     System.out.println("1: YES");
                     System.out.print("2: NO");
                     System.out.print("Choice: ");
-                    int ans2 = Validations.ChoiceValidation(1,2);
+                    int ans2 = Validations.ChoiceValidation(1, 2);
                     
-                    ShowInmateData(); 
+                    while(ans2 == 0){
+                        System.out.print("Exit not allowed:");
+                        ans2 = Validations.ChoiceValidation(1, 2);
+                }
+                    
+                    viewInmateInformation(); 
                     
                     System.out.println("Enter Inmate ID: ");
                     int id = Validations.IntegerValidation();

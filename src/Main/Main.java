@@ -350,6 +350,11 @@ public class Main {
         System.out.print("Do you want to view Inmate Records?(y-1/n-2): ");
         int ans = Validations.ChoiceValidation(1, 2);
         
+        while(ans == 0){
+            System.out.print("Exiting not allowed: ");
+            ans = Validations.ChoiceValidation(1, 2);
+        }
+        
         if(ans == 1){
             ShowInmateData();
         }
@@ -414,9 +419,18 @@ public class Main {
     System.out.println("2: Inmate Record");
     System.out.print("Choice: ");
     int ans = Validations.ChoiceValidation(1, 2);
+    while(ans == 0){
+        System.out.print("Exiting not allowed: ");
+        ans = Validations.ChoiceValidation(1, 2);
+    }
 
     System.out.print("\nDo you want to see inmate list? (y-1/n-2): ");
     int choice = Validations.ChoiceValidation(1, 2);
+    
+    while(choice == 0){
+        System.out.print("Exiting not allowed: ");
+        choice = Validations.ChoiceValidation(1, 2);
+    }
     int iid = 0;
 
     if (choice == 1) {

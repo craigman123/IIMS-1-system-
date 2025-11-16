@@ -32,14 +32,14 @@ public class Bh {
                     System.out.println("1: YES");
                     System.out.print("2: NO");
                     System.out.print("Choice: ");
-                    int ans2 = sc.nextInt();
+                    int ans2 = Validations.ChoiceValidation(1, 2);
                     
-                    while(ans2 <= 1 && ans2 >= 2){
-                        System.out.println("Invalid Choice: Enter Again: ");
-                        ans2 = sc.nextInt();
+                    while(ans2 == 0){
+                        System.out.print("Exit not allowed:");
+                        ans2 = Validations.ChoiceValidation(1, 2);
                 }
                     
-                    ShowInmateData(); 
+                    viewInmateInformation(); 
                     
                     System.out.println("Enter Inmate ID: ");
                     int id = Validations.IntegerValidation();
