@@ -344,6 +344,8 @@ public class Main {
         
         System.out.println("\n--- DELETION MENU ---");
         Scanner sc = new Scanner(System.in);
+        int flag = 0;
+        String getStat = "";
         conf config = new conf();
         boolean run = true;
         
@@ -359,6 +361,7 @@ public class Main {
             ShowInmateData();
         }
         
+        do{
         System.out.println("\n----- 0 to cancel -----");
         System.out.print("Enter ID to Delete Inmate: ");
         int iid = Validations.IntegerValidation();
@@ -385,6 +388,13 @@ public class Main {
                 }
             }
             
+            String qry = "SELECT * FROM inmate WHERE i_id = ?";
+            java.util.List<java.util.Map<String, Object>> getting = config.fetchRecords(qry, iid);
+            java.util.Map<String, Object> status = getting.get(0);
+            getStat = status.get("i_stat").toString();
+            
+           if ("Transffered".equals(getStat) || "Cancelled".equals(getStat) || "Released".equals(getStat)) {
+             flag = 1;
             String in_name = "";
             String sqlQuery = "SELECT i_name FROM inmate WHERE i_id = ?";
             List<Map<String, Object>> result = config.fetchRecords(sqlQuery, iid);
@@ -400,7 +410,13 @@ public class Main {
             String deleteInmateInfo;
             deleteInmateInfo = "DELETE FROM inmate WHERE i_id = ?";
             config.deleteRecord(deleteInmateInfo, iid);
-        }
+           }else{
+               System.out.println("Record Cannot be deleted: ");
+               System.out.println("Inmate Status should be Released, Transfered, or Closed to allow Info Deletion: ");
+               System.out.println("Enter another: ");
+                }
+            }
+        }while(flag == 0);
         return 0;
     }
     
@@ -435,10 +451,10 @@ public class Main {
 
     if (choice == 1) {
         if (ans == 1) {
-            viewInmateInformation();
+            ShowInmateData();
         } else if (ans == 2) {
-            viewInmateInformation();
-            System.out.println("----- 0 to cancel -----");
+            ShowInmateData();
+        System.out.println("----- 0 to cancel -----");
             System.out.print("\nEnter Inmate ID: ");
             
             iid = Validations.IntegerValidation();
@@ -940,7 +956,7 @@ public class Main {
             String qry = "SELECT * FROM record WHERE r_id = ?";
             java.util.List<java.util.Map<String, Object>> result = config.fetchRecords(qry, rec_id);
             
-            if (!result.isEmpty()) {
+            if (result.isEmpty()) {
                     System.out.println("\n ----- ID NOT FOUND ----- ");
                     System.out.print("Enter Again: ");
                     rec_id = Validations.IntegerValidation();

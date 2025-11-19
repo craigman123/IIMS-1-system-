@@ -3,6 +3,8 @@ package Main;
 
 import Config.Validations;
 import Config.conf;
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class UniversalDataDisplay {
@@ -75,14 +77,14 @@ public class UniversalDataDisplay {
     String active = "Active";
     
     String sqlQuery = String.format(
-        "SELECT i_id, u_id, i_name, i_type, i_infoStatus " +
+        "SELECT i_id, u_id, i_name, i_type, i_stat, i_infoStatus " +
         "FROM inmate " +
         "WHERE i_infoStatus = '%s'",
         active
     );
     
-    String[] headers = {"Inmate ID", "User ID", "Inmate Name", "Inmate Type", "Data Status"};
-    String[] cols = {"i_id", "u_id", "i_name", "i_type", "i_infoStatus"};
+    String[] headers = {"Inmate ID", "User ID", "Inmate Name", "Inmate Type", "Inmate Status", "Data Status"};
+    String[] cols = {"i_id", "u_id", "i_name", "i_type","i_stat" ,"i_infoStatus"};
     
     config.viewInmate(sqlQuery, headers, cols);
     
@@ -99,17 +101,17 @@ public class UniversalDataDisplay {
     System.out.print("Enter choice: ");
     int choice = Validations.ChoiceValidation(1, 10);
 
-    String column = "";
+    String column = "", value = "";
     switch (choice) {
-        case 1: column = "i_name"; break;
-        case 2: column = "i_age"; break;
-        case 3: column = "i_gender"; break;
-        case 4: column = "i_nationality"; break;
-        case 5: column = "i_status"; break;
-        case 6: column = "i_type"; break;
-        case 7: column = "i_dateApprehended"; break;
-        case 8: column = "i_dateRegistered"; break;
-        case 9: column = "i_infoStatus"; break;
+        case 1: column = "i_name"; value = "Name"; break;
+        case 2: column = "i_age"; value = "Age"; break;
+        case 3: column = "i_gender"; value = "Gender"; break;
+        case 4: column = "i_nationality"; value = "Nationality"; break;
+        case 5: column = "i_status"; value = "Status"; break;
+        case 6: column = "i_type"; value = "Type"; break;
+        case 7: column = "i_dateApprehended"; value = "Date Apprehended"; break;
+        case 8: column = "i_dateRegistered"; value = "Date Registered"; break;
+        case 9: column = "i_infoStatus"; value = "Case Status"; break;
         case 10: 
             System.out.println("Search cancelled."); 
             return 0;
@@ -190,6 +192,7 @@ public class UniversalDataDisplay {
         System.out.println("8: Transferred");
         System.out.println("9: Released");
         System.out.println("10: Deceased");
+        System.out.println("Enter: ");
         int ans = Validations.ChoiceValidation(0, 10);
 
         String ans_stat = "";
@@ -214,7 +217,7 @@ public class UniversalDataDisplay {
         searchValue = ans_stat;
         
     }else{
-        System.out.print("Enter search value: ");
+        System.out.print("Enter " + value + ": ");
         searchValue = sc.nextLine().trim();
     }
 
@@ -224,12 +227,23 @@ public class UniversalDataDisplay {
     String[] headers = {"Inmate ID", "User ID", "Inmate Name", "Inmate Type", "Data Status"};
     String[] cols = {"i_id", "u_id", "i_name", "i_type", "i_infoStatus"};
 
-    config.viewInmate(sqlQuery, headers, cols);
+    int count = config.viewInmate(sqlQuery, headers, cols);
+    
+    if (count == 1) {
+
+    String fetchOne = "SELECT i_id FROM inmate WHERE " + column + " LIKE ?";
+    List<Map<String, Object>> one = config.fetchRecords(fetchOne, "%" + searchValue + "%");
+
+    if (!one.isEmpty()) {
+        int id = Integer.parseInt(one.get(0).get("i_id").toString());
+        ShowRecordData(id);
+    }else{
+        System.out.println("No Inmates Found: ");
+    }
+}
 
     return 0;
 }
-    
-    
     
     public static int ShowRecordData(int id) {
     System.out.println("\n--- VIEWING INMATE RECORDS ---");
