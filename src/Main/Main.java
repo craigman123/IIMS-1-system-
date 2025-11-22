@@ -187,8 +187,8 @@ public class Main {
 
                 int x;
                 
-            if(stat.equals("Cancelled")){
-                System.out.println("No Record Inmate Cancelled: ");
+            if(stat.equals("Cancelled") || stat.equals("Transferred") || stat.equals("Released") || stat.equals("Deceased")){
+                System.out.println("No Record Inmate " + stat + ": ");
                 
                 sql = "UPDATE inmate SET i_infoStatus = ? WHERE i_id = ?";
                 config.updateRecord(sql, "Unactive", inmate);
@@ -358,7 +358,7 @@ public class Main {
         }
         
         if(ans == 1){
-            ShowInmateData();
+            InmateData();
         }
         
         do{
@@ -393,7 +393,7 @@ public class Main {
             java.util.Map<String, Object> status = getting.get(0);
             getStat = status.get("i_stat").toString();
             
-           if ("Transffered".equals(getStat) || "Cancelled".equals(getStat) || "Released".equals(getStat)) {
+           if ("Transferred".equals(getStat) || "Cancelled".equals(getStat) || "Released".equals(getStat)) {
              flag = 1;
             String in_name = "";
             String sqlQuery = "SELECT i_name FROM inmate WHERE i_id = ?";
@@ -757,6 +757,23 @@ public class Main {
                             if(ExitTrigger(stat)){
                                 return 0;
                             }
+                            
+                            String qry = "SELECT * FROM inmate WHERE i_id = ?";
+                            java.util.List<java.util.Map<String, Object>> getInmateStat = config.fetchRecords(qry, iid);
+                            
+                            if(!getInmateStat.isEmpty()){
+                                java.util.Map<String, Object> user = getInmateStat.get(0);
+                                int getStatus =((Number) user.get("i_record_quan")).intValue();
+                            
+                                if("Case Closed".equals(stat)){
+                                    if(getStatus == 1){
+                                        String sqlUpdateStatus = "UPDATE inmate SET i_infoStatus = ? WHERE 1_id = ?";
+                                        config.updateRecord(sqlUpdateStatus, "Unactive", iid);
+                                        
+                                    }
+                                }
+                            }
+                            
                             String sqlUpdateStatus = "UPDATE record SET r_stat = ? WHERE r_id = ?";
                             config.updateRecord(sqlUpdateStatus, stat, rec_id);
                             flag = 1;
@@ -834,7 +851,7 @@ public class Main {
                                     int quantity = ((Number) user.get("i_record_quan")).intValue();
 
                                     if(quantity == 1){
-                                        String qry = "UPDATE inmate SET i_infoStatus = ? WHERE i_id = ?";
+                                        qry = "UPDATE inmate SET i_infoStatus = ? WHERE i_id = ?";
                                         config.updateRecord(qry, "Unactive", iid);
                                     }
                                 }
@@ -995,6 +1012,9 @@ public class Main {
             if(rec_quan == 0){
                 sql = "UPDATE inmate SET i_infoStatus = ? WHERE i_id = ?";
                 config.updateRecord(sql, "Unactive", iid);
+                
+                sql = "UPDATE inmate SET i_status = ? WHERE i_id = ?";
+                config.updateRecord(sql, "Released", iid);
                 }
             }
         }

@@ -9,7 +9,7 @@ import java.util.Scanner;
 
 public class UniversalDataDisplay {
     public static int ShowUserSession(){
-        System.out.println("\n--- SHOW USER SESSION ---");
+        System.out.println("\n--- DISPLAY USER SESSION ---");
         conf config = new conf();
         
         String sqlQuery = "SELECT s_id, u_id, s_badge, login, logout FROM session_logs";
@@ -23,7 +23,7 @@ public class UniversalDataDisplay {
     }
     
     public static String ShowAllInmateType(String type){
-        System.out.println("\n--- SHOW INMATE TYPE ---");
+        System.out.println("\n--- SEARCH INMATE TYPE ---");
         conf config = new conf();
         
         String sqlQuery;
@@ -81,6 +81,24 @@ public class UniversalDataDisplay {
         "FROM inmate " +
         "WHERE i_infoStatus = '%s'",
         active
+    );
+    
+    String[] headers = {"Inmate ID", "User ID", "Inmate Name", "Inmate Type", "Inmate Status", "Data Status"};
+    String[] cols = {"i_id", "u_id", "i_name", "i_type","i_stat" ,"i_infoStatus"};
+    
+    config.viewInmate(sqlQuery, headers, cols);
+    
+    return 0;
+}
+    
+    public static int InmateData() {
+    System.out.println("\n--- SHOW INMATE ---");
+    conf config = new conf();
+    String active = "Active";
+    
+    String sqlQuery = String.format(
+        "SELECT i_id, u_id, i_name, i_type, i_stat, i_infoStatus " +
+        "FROM inmate"
     );
     
     String[] headers = {"Inmate ID", "User ID", "Inmate Name", "Inmate Type", "Inmate Status", "Data Status"};

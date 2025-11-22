@@ -57,7 +57,7 @@ public class Ho {
                             return 0;
                         }
 
-                        String qry = "SELECT * FROM record WHERE i_id = ?";
+                        String qry = "SELECT * FROM inmate WHERE i_id = ?";
                         java.util.List<java.util.Map<String, Object>> result = config.fetchRecords(qry, id);
 
                         if (result.isEmpty()) {
